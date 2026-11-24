@@ -1,0 +1,70 @@
+로컬 파일/파서 직접 허용 재실험 vs 최종 힌트(Hint) 적용 실험 비교 분석표 (문항 유형 통합),,,,,,,,,,,,
+"※ 4단계 파이프라인: ① DISCOVERY → ② PARSING → ③ EXTRACTION → ④ REASONING  |  문항 유형: T1(시스템·파일), T2(사용자·기기 활동), T3(앱 데이터), T4(복합 증거)",,,,,,,,,,,,
+,,,,,,,,,,,,
+플랫폼,문제 번호,질문 (Question),문항 유형,"공식 정답
+(Ground Truth)","기존 초회
+오답 라벨","최종 힌트 실험 결과
+(제윤 / 세라)","기존 힌트 실험의
+성공·실패 핵심 요인","이번 재실험
+에이전트 제출답","파이프라인 도달 단계
+(도구 효과 검증)","이번 재실험 실패·오답 원인
+(4단계 파이프라인 진단)","단계 전이
+(Stage Shift)",종합 비교 인사이트
+26and,#8,What class had the most badges?,T1 (시스템·파일 분석),com.ss.android.ugc.aweme.splash.SplashActivity,EXTRACTION,제윤: X (Enhanced Access),힌트(슬라이싱 스크립트 가이드 작성)에도 대상 파일 미연결로 실제 계산 실패,com.bytedance.nproject.app.MainActivity (99),"② PARSING 정체
+(Readable data 미생성)","[PARSING → EXTRACTION 연쇄 오류] badge.db-wal(Located artifact)까지는 찾았으나, 로컬 SQLite 파서 대신 Autopsy 깨진 텍스트 덤프를 수동 해독(PARSING 실패)하면서, 이미 만료·초기화된 과거 WAL 레코드(Lemon8, 99)를 최종 활성 레코드(TikTok, 15)로 잘못 추출(EXTRACTION 오류)함",EXTRACTION → PARSING,"출력 용량 초과(270만자)는 우회했으나, Readable data(정상 SQLite 결합 테이블)로 파싱하지 못해 과거 이력과 현재 상태를 혼동함"
+26and,#13,When in UTC was the timezone set? (YYYY-MM-DD HH:MM:SS),T1 (시스템·파일 분석),2025-11-10 18:11:26 OR 2025-11-10 18:11:25,"EXTRACTION /
+DISCOVERY","제윤: X (Enhanced Access)
+세라: X (Locator)","제윤은 대상 테이블 오인(18:10:59), 세라는 DB_SET_TIMEZONE.xml mtime(18:11:14) 도출 후 11초 오차로 X",2025-11-10 18:11:14 (UTC),"③ EXTRACTION 완료
+(PARSING/EXTRACTION 해결)","[REASONING / DISCOVERY 전이] 로컬 파일 조회로 DB_SET_TIMEZONE.xml의 mtime(18:11:14)까지 Extracted evidence로 정확히 뽑았으나, 실제 타임존 설정이 기록된 근본 시스템 아티팩트(18:11:25~26) 대신 11초 먼저 생성된 파생 앱 설정 파일 시각을 대리 추론(REASONING 오류)함",EXTRACTION → REASONING,"파서·로컬 접근 제공으로 세라의 Locator 힌트 결과(18:11:14)와 동일한 증거 추출(3단계)까지 도달했으나, 최종 해석(4단계)에서 동일 오답 반복"
+26ios,#17,In UTC when was the last iCloud backup? (YYYY-MM-DD HH:MM:SS),T1 (시스템·파일 분석),2025-12-12 18:00:10,PARSING,세라: X (Enhanced Access),힌트에서도 Autopsy 텍스트 리더의 바이트 손상(8바이트 중 3바이트 유실) 및 로컬 권한 거부로 실패,2025-12-12 18:00:11 UTC,"③ EXTRACTION 완료
+(PARSING/EXTRACTION 해결)","[REASONING / 미세 시차 전이] 로컬 원본 com.apple.MobileBackup.plist를 plistlib으로 완벽 디코딩(PARSING 해결)하여 ""Backup succeeded"" 시각(18:00:11.748)을 추출(EXTRACTION 해결)했으나, 정답 기준 필드(18:00:10)와 완료 상태 로그 간 1초 기록 시차로 오답 처리됨",PARSING → REASONING(1초 시차),"""파서 제공(plistlib)"" 효과를 가장 극명하게 보여준 사례. 기술적 PARSING·EXTRACTION 장벽은 100% 돌파함"
+26ios,#19,How many people did the user message expressing concern about Daniel?,T3 (애플리케이션 데이터 분석),3,EXTRACTION,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)","제윤은 SQL 파서 부재·Signal 암호화로 X, 세라는 Signal SQLCipher 암호화 및 키체인 키 부재로 X",미제출 (중단),"② PARSING 차단
+(Depth 제한으로 파일 접근 불가)","[PARSING 단계 차단] Zangi, Instagram, X 메신저 DB의 Located artifact(1단계 DISCOVERY)까지는 모두 특정했으나, 최상위 루트(iPhone14Plus)만 연결된 환경에서 도구의 ""하위 폴더 7단계 깊이 제한""에 걸려 8~11단계 깊이의 DB를 Readable data로 파싱하지 못함",EXTRACTION → PARSING(Depth 제한),권한 부여만으로는 iOS AppGroup(8~11단계 깊이)의 7단계 Depth 제한을 넘지 못해 2단계(PARSING) 진입이 차단됨
+26ios,#25,What is the mascot of the frozen dessert shop that the user visits a lot?,T4 (복합 증거 분석),The Panda OR Panda,EXTRACTION,세라: X (Enhanced Access),세라는 PDPlaceCache.db-wal에서 가게명(Shy Guy Gelato) 추출 후 인터넷 차단으로 웹사이트 조회 불가해 X,미제출 (중단),"② PARSING 차단
+(위치DB 해결 / 캐시 Depth 차단)","[PARSING 단계 차단] 위치 학습 DB(Cloud-V2.sqlite)를 파싱해 ""Shy Guy Gelato""까지는 추출했으나, 마스코트 이미지가 캐싱된 SNS/지도 앱 캐시(Containers/...)가 8단계 이상 깊이에 있어 7단계 깊이 제한으로 Readable data 변환에 실패함",EXTRACTION → PARSING(Depth 제한),"1차 증거(가게명)는 파싱·추출했으나, 2차 증거(마스코트 이미지 캐시)가 깊은 경로 Depth 제한에 막혀 2단계에서 중단됨"
+26ios,#30,How much time elapsed between Tom reading a phone number and sending their first message on a different platform? (HH:MM:SS.sss),T4 (복합 증거 분석),00:02:32.077,EXTRACTION,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)","제윤은 Signal 암호화로 X, 세라는 Zangi 발송시각 추출했으나 X DM 바이너리 손상으로 읽음 시각 추출 실패",미제출 (중단),"② PARSING 차단
+(Depth 제한으로 파일 접근 불가)","[PARSING 단계 차단] 밀리초 타임스탬프 비교가 필요한 X DM, Zangi, Instagram DB(Located artifact)는 찾았으나, 8단계 이상 깊은 AppGroup 경로가 7단계 깊이 제한에 차단되어 원본 SQLite를 Readable data로 파싱하지 못함",EXTRACTION → PARSING(Depth 제한),#19·#25와 동일한 iOS 경로 Depth 병목. Containers 폴더 단독 마운트 시 2단계(PARSING) 및 3단계(SQL) 일괄 해결 가능
+26mac,#33,What was the lowest battery level the device reached?,T2 (사용자·기기 활동 분석),39.0 OR 39,EXTRACTION,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)",제윤·세라 모두 CurrentPowerlog.PLSQL 특정했으나 로컬 추출 폴더 접근 불가 및 텍스트 손상(? 치환)으로 X,미제출 (중단),"② PARSING 차단
+(로컬 폴더 미마운트)","[PARSING 단계 차단] 정답 DB(CurrentPowerlog.PLSQL)와 SQL 쿼리(SELECT MIN(Level)...)까지 설계했으나, MacBookPro 로컬 추출 폴더가 샌드박스에 마운트되지 않아 Autopsy 텍스트 리더의 바이너리 손상(? 치환)으로 Readable data 생성에 실패함",EXTRACTION → PARSING(마운트 유실),"에이전트의 1단계(DISCOVERY)와 3단계(SQL 설계) 역량은 완벽하나, 로컬 폴더 마운트 유실로 2단계(PARSING)가 원천 차단됨"
+26mac,#43,What was the logical size of the second most recent backup?,T1 (시스템·파일 분석),7506837257 OR 9251250272,PARSING,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)",제윤·세라 모두 바이너리 plist 바이트 손상(?? 치환)으로 정확한 크기 대신 범위 추정치만 출력해 X,미제출 (중단),"② PARSING 차단
+(로컬 폴더 미마운트)","[PARSING 단계 유지] 두 번째 최신 Time Machine 백업(2025-11-26-105508)과 정답 파일(.com.apple.timemachine.checkpoint, ID 757726) 및 용량 키까지 특정했으나, MacBookPro 폴더 미연결로 plistlib 실행이 불가해 바이너리 손상(? 치환)으로 2단계에서 멈춤","PARSING 유지
+(마운트 유실)",기존 힌트 실험과 동일한 2단계(PARSING) 병목. MacBookPro 추출 폴더만 정상 마운트되면 plistlib으로 즉시 해결 가능
+26mac,#47,"At what time (UTC 24hr time, format HH:MM) did the user join the network of a cafe on the first day of the month?",T2 (사용자·기기 활동 분석),20:45,"EXTRACTION /
+DISCOVERY","제윤: X (Enhanced Access)
+세라: O (Locator)","제윤은 20:45 추정 후 파서 미비로 미확정, 세라는 부팅·앱 네트워크 활성화 시점 추론으로 20:45 정답 도출 성공",20:42,"② PARSING 차단
+(로컬 폴더 미마운트)","[PARSING → REASONING 연쇄 오류] Biome Wi-Fi 스트림(_DKEvent.Wifi.Connection, ID 711409)과 카페 SSID(uncommonqburyguest)는 찾았으나, MacBookPro 폴더 미연결로 SEGB 바이너리의 double 타임스탬프 하위 1바이트가 손상(PARSING 실패)되어 부팅 시각(20:42)으로 오추론함",EXTRACTION → PARSING,"세라는 Locator 힌트+추론으로 20:45를 맞혔으나, 2단계(SEGB 바이너리 파싱)가 막히면 4분 오차 범위 내에서 오추론 위험이 큼"
+25chr,#73,When did the user first interact with a fanfiction website? (UTC) Format: YYYY-MM-DD HH:MM:SS,T3 (애플리케이션 데이터 분석),2024-11-06 01:09:41,"EXTRACTION /
+DISCOVERY","제윤: X (Enhanced Access)
+세라: X (Locator)","제윤은 Takeout(01:08:11)만 추출해 오답, 세라는 DIPS DB(bounces) 특정 후 8바이트 타임스탬프 손상·권한 거부로 X",2024-11-06 01:08:11 (UTC),"③ EXTRACTION 부분완료
+(하드링크로 로컬DB 미파싱)","[PARSING(하드링크) + REASONING 전이] Google Takeout과 My Activity를 파싱해 정답 시각(01:09:41)까지 Extracted evidence 표에 뽑았으나, 기기 로컬 Chrome History/DIPS DB가 하드링크(hard-link) 제약으로 파싱이 거부되어 교차 검증 없이 동기화 기록(01:08:11)을 선택함",EXTRACTION → REASONING,"정답 시각(01:09:41)을 3단계(Extracted evidence) 후보군까지 끌어올렸으나, 하드링크 복사 제한 때문에 4단계(REASONING) 교차 검증에 실패함"
+25chr,#79,What is the ID of the URL with the most number of hits?,T3 (애플리케이션 데이터 분석),472a3434-8989-4133-b94a-515133,PARSING,"제윤: X (Enhanced Access)
+세라: O (Enhanced Access)","제윤은 History DB 텍스트 손상으로 중단, 세라는 Network Action Predictor DB에서 UUID와 hits=2 레코드를 직접 파싱해 정답 성공",11 (Chrome History urls.id),"① DISCOVERY 오인
+(잘못된 아티팩트 선택)","[DISCOVERY → PARSING 복합 오류] 정답(UUID 형식)은 Network Action Predictor(또는 Shortcuts) DB에 있으나 일반 Chrome History의 urls 테이블(정수 id=11)을 잘못 특정(1단계 DISCOVERY 오류)했고, 그마저 하드링크·경로 제한으로 깨진 텍스트 덤프를 수동 해독함",PARSING → DISCOVERY,"세라 힌트 결과와 대조 시, 파서 제공만으로는 1단계(어떤 DB를 열어야 하는지: Network Action Predictor) 탐색 한계가 명확히 드러남"
+25chr,#82,How many shirts are in the ad?,T1 (시스템·파일 분석),8,PARSING,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)",제윤·세라 모두 Marketing Advertisements.7z 내 TypeShirt_Ad.jpeg를 특정했으나 로컬 폴더 접근 권한 거부로 압축 해제 실패,미제출 (중단),"② PARSING 차단
+(Depth 제한으로 압축미해제)","[PARSING 단계 유지] 정답 이미지가 포함된 Marketing Advertisements.7z(Located artifact)와 Autopsy의 오인 원인(ZArchiver 생성 아카이브)까지 정확히 파악했으나, 하위 폴더(MyFiles\Downloads)가 앱에 미마운트되어 7단계 깊이 제한으로 압축 해제(Readable data 변환)에 실패함","PARSING 유지
+(Depth 제한)",Chromebook 역시 깊은 경로(8단계 이상)에서는 하위 폴더 직접 마운트가 누락될 경우 2단계(PARSING: 압축 해제)가 차단됨
+25ios,#89,What color hair does Ruth's Bitmoji have?,T1 (시스템·파일 분석),blonde,PARSING,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)",제윤(.webp 캐시)·세라(bitmojiNotif PNG) 모두 파일을 특정했으나 텍스트 리더 훼손 및 로컬 폴더 접근 거부로 이미지 열람 실패,미제출 (중단),"② PARSING 차단
+(Depth 제한으로 압축미해제)","[PARSING 단계 유지] Snapchat 컨테이너 내 압축 파일(avatar_data, 1,376바이트)의 정확한 경로(1단계 DISCOVERY)까지 특정했으나, 루트 기준 10단계 깊이에 위치해 7단계 깊이 제한에 막혀 원본 바이트를 복사·압축 해제(2단계 PARSING)하지 못하고 중단","PARSING 유지
+(Depth 제한)",iOS 서드파티 앱 데이터(Containers/Data/Application)의 10단계 깊이 구조로 인한 전형적인 2단계(PARSING) 병목
+25ios,#98,"Using format YYYY-MM, When was this device purchased?",T1 (시스템·파일 분석),2022-12,PARSING,"제윤: X (Enhanced Access)
+세라: X (Enhanced Access)","제윤·세라 모두 bplist 바이너리 손상으로 디코딩에 실패하고, 교차 추론한 재설정·활성화 연월(2024-09 / 2024-06)을 제출해 X",2024-06,"③ EXTRACTION 완료
+(PARSING/EXTRACTION 해결)","[REASONING / DISCOVERY 전이] 로컬 파일 파싱(PARSING 해결)으로 com.apple.NewDeviceOutreach.plist를 해독해 활성화일(2024-06-25)과 ""보증 이미 만료"" 모순까지 추출(EXTRACTION 해결)했으나, 최초 출고/구매일(2022-12)을 역산할 일련번호 메타데이터 탐색·해석(4단계 REASONING)에서 실패함",PARSING → REASONING,"기존 힌트 실험에서 막혔던 2단계(bplist 파싱)는 파서 제공으로 해결했으나, 재활성화일 vs 최초구매일을 구분하는 4단계 추론에서 실패"
+25ios,#102,When was the last written record created? (format YYYY-MM-DD HH:MM:SS),T1 (시스템·파일 분석),2024-11-20 20:02:02,"EXTRACTION /
+DISCOVERY","제윤: O (Enhanced Access)
+세라: X (Locator)",제윤은 SEGB 스트림(CellularQualityStatus 등)을 분할 조회해 2024-11-20 정답 도출 성공! 세라는 NoteStore.sqlite만 조회해 X,2024-11-13 18:04:13,"③ EXTRACTION 완료
+(PARSING/EXTRACTION 해결)","[DISCOVERY 전이] 로컬 파일 접근과 SQLite 파서로 Apple Notes(NoteStore.sqlite + WAL)의 최신 메모(2024-11-13 18:04:13)를 완벽히 파싱·추출(2·3단계 해결)했으나, ""written record""를 기본 메모장 하나로만 좁게 해석(1단계 DISCOVERY 오류)해 11월 20일자 기록 아티팩트를 놓침",EXTRACTION → DISCOVERY,"세라 실험에서 깨졌던 NoteStore.sqlite 파싱(2단계)은 완벽 해결되었으나, 제윤 최종본(SEGB 탐색 성공)과 달리 1단계(DISCOVERY) 범위 설정에서 갈림"
+25and,#110,What degree does Mary have?,T1 (시스템·파일 분석),Associate of Applied Science Marketing,"DISCOVERY /
+EXTRACTION","제윤: X (Locator)
+세라: X (Enhanced Access)",제윤·세라 모두 이력서 PDF(marysresume.pdf)를 찾았으나 대용량 이메일 오류 및 PDF 압축 디코딩 한계로 텍스트 추출 실패,"associate degree in Marketing
+(본문에 원문 명시)","④ REASONING 도달
+(파싱·증거추출 100% 성공)","[REASONING / 최종 출력 포맷 전이] 로컬 폴더 접근과 MD5 해시 검증, PDF/DOCX 파싱(2단계) 및 학력 원문 추출(3단계: ""Associate of Applied Science Marketing"")까지 100% 완수했으나, 4단계 최종 요약 문장에서 일반화된 표현(""associate degree in Marketing"")으로 의역해 자동 채점 오답 처리됨",EXTRACTION → REASONING(출력의역),기존 힌트 실험(제윤·세라 모두 X)에서 불가능했던 압축 PDF/DOCX 해독(2·3단계)을 완벽 돌파한 실질적 성공 사례
+25and,#111,What is the name of the structure seen in the picture taken at night?,T1 (시스템·파일 분석),Moran Frame,"REASONING /
+PARSING","제윤: X (Oracle Evidence)
+세라: O (Enhanced Access)","제윤은 EXIF/로컬 폴더 권한 거부로 X, 세라는 야간 사진 EXIF GPS 좌표를 파싱하고 위치 정보를 교차 검증해 Moran FRAME 정답 성공",The Frame,"③ EXTRACTION 완료
+(EXIF·시각판독 100% 성공)","[DISCOVERY / REASONING 전이] 로컬 사진 접근, EXIF GPS 추출(Burlington, VT), 고해상도 이미지 확대를 통해 현장 간판 문구(""THE FRAME"")를 Extracted evidence로 완벽히 뽑았으나, 웹 검색 금지 상태에서 기기 내 다른 아티팩트(검색·지도·대화 등)를 추가 탐색·교차 검증해 공식 명칭(""Moran Frame"")을 도출하지 못함",PARSING → DISCOVERY/REASONING,"2·3단계(EXIF 및 시각 판독 기술)는 완벽히 작동했으나, 약칭(The Frame)을 정식 명칭(Moran Frame)으로 보완하는 1·4단계 교차 탐색이 누락됨"

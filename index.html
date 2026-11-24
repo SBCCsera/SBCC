@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>디지털 포렌식 LLM 에이전트 오답 분석 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #18202c;
+      --muted: #5c687a;
+      --line: #e2e8f0;
+      --primary: #1f5eff;
+      --primary-soft: #eef3ff;
+      --warn: #b45309;
+      --warn-bg: #fef3c7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Malgun Gothic", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 28px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      max-width: 1360px;
+      margin: 0 auto 14px;
+    }
+    h1 { margin: 0; font-size: 20px; font-weight: 700; }
+    .sub { font-size: 13px; color: var(--muted); }
+    .status-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12.5px; }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .badge.warn { background: var(--warn-bg); color: var(--warn); }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      max-width: 1360px;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--muted);
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    main { max-width: 1360px; margin: 24px auto 48px; padding: 0 28px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+    }
+    .kpi-label { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+    .kpi-value { font-size: 26px; font-weight: 800; }
+    .kpi-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    select, input[type="text"], button.secondary, label.secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    input[type="text"] { min-width: 240px; }
+    button.secondary, label.secondary { cursor: pointer; font-weight: 600; display: inline-block; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f8fafc; font-weight: 700; position: sticky; top: 0; }
+    tr:hover td { background: #f9fbff; }
+    .insight-box {
+      background: var(--primary-soft);
+      border-left: 4px solid var(--primary);
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+    }
+    ul.clean { margin: 8px 0 0; padding-left: 18px; }
+    ul.clean li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>디지털 포렌식 LLM 에이전트 오답 분석 대시보드</h1>
+        <div class="sub">1. 전체 이미지·질문 유형 · 2. 오답 유형 분류 · 3. 힌트 재실행 결과 · 4. Qwen 결과</div>
+      </div>
+      <div class="status-bar">
+        <span id="loadStatus" class="badge">./data CSV 자동 로딩 중...</span>
+        <label class="secondary">
+          수동 CSV 추가
+          <input id="manualCsvInput" type="file" accept=".csv" multiple style="display:none" />
+        </label>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="overview">1. 전체 이미지·질문 유형</button>
+      <button class="tab-btn" data-tab="error-types">2. 오답 유형 분류</button>
+      <button class="tab-btn" data-tab="hint-rerun">3. 힌트 재실행 결과</button>
+      <button class="tab-btn" data-tab="qwen">4. Qwen 결과</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 1페이지: 전체 이미지 분석결과 & 질문 유형 분류 -->
+    <section id="overview" class="tab-panel active">
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-label">전체 평가 문항 수</div>
+          <div id="kpiTotalQuestions" class="kpi-value">118문항</div>
+          <div class="kpi-note">Magnet Virtual Summit 2025·2026 이미지 통합</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">대상 이미지 수</div>
+          <div id="kpiImageCount" class="kpi-value">7종</div>
+          <div class="kpi-note">전체 평가 대상 포렌식 디스크/디바이스 이미지</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">질문 유형 (T1~T4)</div>
+          <div class="kpi-value">4유형</div>
+          <div class="kpi-note">시스템·파일 / 사용자·기기 / 앱 데이터 / 복합 증거</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">전체 정답률</div>
+          <div id="kpiAccuracy" class="kpi-value">69.5%</div>
+          <div class="kpi-note">전체 118문항 기준</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0">전체 이미지 분석결과</h3>
+          <img
+            src="./data/2.1.png"
+            alt="전체 이미지 분석결과 (2.1.png)"
+            style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/2.1.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">질문 유형 분류</h3>
+          <img
+            src="./data/3.1.png"
+            alt="질문 유형 분류 (3.1.png)"
+            style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/3.1.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0">문제 유형별 이미지별 정답률</h3>
+          <img
+            src="./data/3.2.png"
+            alt="문제 유형별 이미지별 정답률 (3.2.png)"
+            style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/3.2.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">문제 분류 유형 설명</h3>
+          <img
+            src="./data/4.1.png"
+            alt="문제 분류 유형 설명 (4.1.png)"
+            style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/4.1.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2페이지: 오답 유형 분류 -->
+    <section id="error-types" class="tab-panel">
+      <div class="card" style="padding:12px 18px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <h3 style="margin:0">포렌식 분석 단계별 오답 발생 지점</h3>
+        </div>
+        <img
+          src="./data/0.1.png"
+          alt="오답 유형 분석 개요 (0.1.png)"
+          style="width:100%;max-width:100%;height:auto;margin-top:8px;border-radius:8px;border:1px solid var(--line);display:block;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+        />
+        <div style="display:none;font-size:12px;color:var(--muted);padding-top:6px;">
+          ./data/0.1.png 파일을 data 폴더에 넣어주세요.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0">오답 유형 분류 분포</h3>
+          <img
+            src="./data/4.2.png"
+            alt="오답 유형 분류 분포 (4.2.png)"
+            style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/4.2.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">오답 유형 별 의미</h3>
+          <div class="insight-box">
+            <ul class="clean">
+              <li><strong>DISCOVERY:</strong> 필요한 아티팩트나 파일·로그 위치를 탐색하지 못하거나 놓친 경우</li>
+              <li><strong>EXTRACTION:</strong> 대상 파일/데이터/DB를 추출하거나 접근·복구하지 못한 경우</li>
+              <li><strong>PARSING:</strong> 추출한 데이터나 바이너리·로그·포맷을 올바르게 해석·변환하지 못한 경우</li>
+              <li><strong>REASONING:</strong> 수집·파싱된 증거들을 연결해 질문 의도에 맞게 추론·판단하지 못한 경우</li>
+              <li><strong>REFUSAL:</strong> 에이전트가 분석·답변을 수행하지 않고 거부하거나 중단한 경우</li>
+            </ul>
+          </div>
+          <img
+            src="./data/7.png"
+            alt="오답 유형 별 의미 (7.png)"
+            style="max-width:100%;height:auto;margin-top:12px;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:12px 0;color:var(--muted);font-size:13px;">
+            ./data/7.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">오답 라벨링 예시</h3>
+        <div class="filters">
+          <input id="caseSearch" type="text" placeholder="문항 번호, 질문, 오답 유형, 경로/원인 검색..." />
+          <select id="platformFilter"><option value="">전체 이미지/데이터셋</option></select>
+          <select id="errorFilter"><option value="">전체 오답 유형</option></select>
+          <button id="resetCaseFilters" class="secondary">필터 초기화</button>
+        </div>
+        <div id="casesTableWrap" class="table-wrap"></div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+          <button id="toggleMoreCases" class="secondary">더보기</button>
+          <span id="casesCountInfo" style="font-size:12.5px;color:var(--muted);"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">오답 유형 분석: Discovery &amp; Reasoning</h3>
+        <div class="grid-2" style="margin-bottom:0;">
+          <div>
+            <img
+              src="./data/5.2(1)-1.png"
+              alt="Discovery & Reasoning 분석 (5.2(1)-1.png)"
+              style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+            />
+            <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+              ./data/5.2(1)-1.png 파일을 data 폴더에 넣어주세요.
+            </div>
+          </div>
+          <div>
+            <img
+              src="./data/5.2(2)-1.png"
+              alt="Discovery & Reasoning 분석 (5.2(2)-1.png)"
+              style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+            />
+            <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+              ./data/5.2(2)-1.png 파일을 data 폴더에 넣어주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">오답 유형 분석: Extraction &amp; Parsing</h3>
+        <img
+          src="./data/6.png"
+          alt="Extraction & Parsing 분석 (6.png)"
+          style="max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+        />
+        <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+          ./data/6.png 파일을 data 폴더에 넣어주세요.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3페이지: 오답 유형을 힌트 주고 다시 돌렸을때 결과 -->
+    <section id="hint-rerun" class="tab-panel">
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-label">힌트 재실행 대상 케이스</div>
+          <div class="kpi-value">95건</div>
+          <div class="kpi-note">오답 문항 힌트 주입 후 재풀이</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">힌트 후 정답 복구 성공</div>
+          <div class="kpi-value">25건</div>
+          <div class="kpi-note">전체 복구율 26.3%</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">최고 효과 힌트 유형</div>
+          <div class="kpi-value">Oracle Evidence (61.5%)</div>
+          <div class="kpi-note">추론/조건부 직접 단서 제공 시 압도적</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="align-items:stretch;">
+        <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;">
+          <h3 style="margin-top:0">오답 유형별 힌트 복구율</h3>
+          <img
+            src="./data/8.png"
+            alt="오답 유형별 힌트 복구율 (8.png)"
+            style="width:100%;max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+            ./data/8.png 파일을 data 폴더에 넣어주세요.
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div class="card" style="margin-bottom:0;">
+            <h3 style="margin-top:0">오답 유형별 힌트 결과 및 실패 원인</h3>
+            <img
+              src="./data/8.1.png"
+              alt="오답 유형별 힌트 결과 및 실패 원인 (8.1.png)"
+              style="width:100%;max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+            />
+            <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+              ./data/8.1.png 파일을 data 폴더에 넣어주세요.
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <h3 style="margin-top:0">힌트 유형별 의미</h3>
+            <img
+              src="./data/8.2.png"
+              alt="힌트 유형별 의미 (8.2.png)"
+              style="width:100%;max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+            />
+            <div style="display:none;padding:16px;color:var(--muted);font-size:13px;">
+              ./data/8.2.png 파일을 data 폴더에 넣어주세요.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <h3 style="margin-top:0">힌트 복구 결과 데이터 셋</h3>
+        <div class="filters">
+          <input id="hintSearch" type="text" placeholder="문제 번호, 질문, 복구 결과 검색..." />
+          <select id="hintErrorTypeFilter"><option value="">전체 오답 유형</option></select>
+          <select id="hintTypeFilter"><option value="">전체 힌트 유형</option></select>
+          <button id="resetHintFilters" class="secondary">필터 초기화</button>
+        </div>
+        <div id="hintDatasetWrap" class="table-wrap"></div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+          <button id="toggleMoreHintRows" class="secondary">더보기</button>
+          <span id="hintRowsCountInfo" style="font-size:12.5px;color:var(--muted);"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4페이지: Qwen 검증 결과 -->
+    <section id="qwen" class="tab-panel">
+      <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-bottom:18px;">
+        <div class="card" style="margin-bottom:0;">
+          <h3 style="margin-top:0">실험 모델</h3>
+          <div class="insight-box">
+            <ul class="clean">
+              <li><strong>Qwen 3.8 Max</strong></li>
+              <li><strong>Google Antigravity</strong></li>
+              <li><strong>Hai-GPT</strong> 게이트 웨이 경유</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h3 style="margin-top:0">실험 방식</h3>
+          <div class="insight-box">
+            <ul class="clean">
+              <li><strong>문항별 새 대화</strong></li>
+              <li><strong>Claude 실험과 동일질문</strong></li>
+              <li><strong>힌트 없이 1회 테스트</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h3 style="margin-top:0">한도 제한</h3>
+          <div class="insight-box">
+            <ul class="clean">
+              <li><strong>문항당 도구 호출 20회</strong></li>
+              <li><strong>또는 첫 호출 후 10분</strong></li>
+              <li><strong>도구 결과 1건당 8000자</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">오답 문제 재검증 결과 (Qwen)</h3>
+        <div class="filters">
+          <input id="qwenSearch" type="text" placeholder="문제 번호, 질문, 결과/비고 검색..." />
+          <select id="qwenStatusFilter"><option value="">전체 사유 결과</option></select>
+          <button id="resetQwenFilters" class="secondary">필터 초기화</button>
+        </div>
+        <div id="qwenTableWrap" class="table-wrap"></div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+          <button id="toggleMoreQwenRows" class="secondary">더보기</button>
+          <span id="qwenRowsCountInfo" style="font-size:12.5px;color:var(--muted);"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const DATA_FILES = {
+      summaryRaw: "./data/1_문제 유형 분류 - 전체 요약.csv",
+      humanVsAi: "./data/2_Discovery&Reasoning_사람vsAI경로비교 - 문제별_상세비교표.csv",
+      patternStats: "./data/2_Discovery&Reasoning_사람vsAI경로비교 - 패턴_요약통계.csv",
+      accessCompare: "./data/2_Extraction&Parsing_접근허용복구비교 - 로컬접근vs힌트_비교분석.csv",
+      accessSummary: "./data/2_Extraction&Parsing_접근허용복구비교 - 유형별_비교요약.csv",
+      labelFinal: "./data/2_오답라벨링(정리본) - 1_최종탭.csv",
+      labelHint: "./data/2_오답라벨링(정리본) - 2_힌트탭.csv",
+      labelDetail: "./data/2_오답라벨링(정리본) - 3_힌트 구체화.csv",
+      hintEffect: "./data/3_오답문제 힌트, 정답 효과 - 힌트 정답 복구 효과 통계.csv",
+      qwen: "./data/3_오픈소스모델(QWEN)_오답문제재풀이 - 시트1.csv"
+    };
+
+    const state = {
+      imageRows: [],
+      qTypeRows: [],
+      humanVsAi: [],
+      patternStats: [],
+      accessCompare: [],
+      accessSummary: [],
+      labelFinal: [],
+      hintEffect: [],
+      qwen: []
+    };
+
+    let showAllCases = false;
+    let showAllHintRows = false;
+    let showAllQwenRows = false;
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    function cleanText(v) {
+      return String(v ?? "")
+        .replace(/\uFFFD|□/g, "·")
+        .replace(/[\r\n]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function escapeHtml(v) {
+      return cleanText(v)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function parseCsvRaw(url) {
+      return new Promise(resolve => {
+        Papa.parse(encodeURI(url), {
+          download: true,
+          header: false,
+          skipEmptyLines: true,
+          complete: res => resolve({ ok: true, rows: res.data || [] }),
+          error: () => resolve({ ok: false, rows: [] })
+        });
+      });
+    }
+
+    function parseCsvObjects(url) {
+      return new Promise(resolve => {
+        Papa.parse(encodeURI(url), {
+          download: true,
+          header: false,
+          skipEmptyLines: true,
+          complete: res => {
+            const raw = res.data || [];
+            if (!raw.length) return resolve({ ok: true, rows: [] });
+
+            let headerIdx = raw.findIndex(cells => {
+              const joined = cells.map(cleanText).join(" ");
+              return joined.includes("번호") && (joined.includes("질문") || joined.includes("문항유형"));
+            });
+
+            if (headerIdx === -1) {
+              const firstJoined = raw[0].map(cleanText).join(" ");
+              headerIdx = (firstJoined.includes("최종탭") || firstJoined.includes("기본 정보")) && raw.length > 1 ? 1 : 0;
+            }
+
+            const headers = raw[headerIdx].map((h, i) => cleanText(h) || `열_${i + 1}`);
+            const dataRows = raw.slice(headerIdx + 1).filter(cells =>
+              cells.some(c => cleanText(c) !== "")
+            );
+
+            const objects = dataRows.map(cells => {
+              const obj = {};
+              headers.forEach((h, i) => {
+                obj[h] = cells[i] ?? "";
+              });
+              return obj;
+            });
+
+            resolve({ ok: true, rows: objects });
+          },
+          error: () => resolve({ ok: false, rows: [] })
+        });
+      });
+    }
+
+    function parseSummaryBlocks(rawRows) {
+      const imageRows = [];
+      const qTypeRows = [];
+
+      rawRows.forEach(cells => {
+        const c = cells.map(x => cleanText(x)).filter(Boolean);
+        if (c.length >= 2 && !isNaN(Number(c[c.length - 1])) && !c[0].startsWith("T")) {
+          imageRows.push({
+            "구분": c[0],
+            "문항 수": Number(c[c.length - 1])
+          });
+        }
+        if (c[0] && /^T[1-4]$/i.test(c[0])) {
+          qTypeRows.push({
+            "코드": c[0],
+            "유형/설명": c.slice(1).join(" · ")
+          });
+        }
+      });
+
+      state.imageRows = imageRows;
+      state.qTypeRows = qTypeRows;
+    }
+
+    function renderTable(container, rows, maxRows = 200) {
+      if (!rows || !rows.length) {
+        container.innerHTML = `<div style="padding:16px;color:#5c687a">표시할 데이터가 없습니다.</div>`;
+        return;
+      }
+      const cols = Object.keys(rows[0]).filter(c => c && !c.startsWith("__parsed_extra"));
+      const sliced = rows.slice(0, maxRows);
+      const thead = `<thead><tr>${cols.map(c => `<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>`;
+      const tbody = `<tbody>${sliced.map(r =>
+        `<tr>${cols.map(c => `<td>${escapeHtml(r[c])}</td>`).join("")}</tr>`
+      ).join("")}</tbody>`;
+      const notice = rows.length > maxRows
+        ? `<div style="padding:8px 12px;font-size:12px;color:#5c687a">상위 ${maxRows}건 표시 중 (전체 ${rows.length}건)</div>`
+        : "";
+      container.innerHTML = `<table>${thead}${tbody}</table>${notice}`;
+    }
+
+    function populateSelect(selectEl, values) {
+      const current = selectEl.value;
+      const firstOption = selectEl.options[0].outerHTML;
+      const map = new Map();
+
+      values.forEach(v => {
+        const cleaned = cleanText(v);
+        if (!cleaned) return;
+        const key = cleaned.toLowerCase();
+        if (!map.has(key)) map.set(key, cleaned);
+      });
+
+      const unique = [...map.values()].sort();
+      selectEl.innerHTML =
+        firstOption +
+        unique.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+
+      if (unique.includes(current)) selectEl.value = current;
+    }
+
+    function updateErrorTypesTab() {
+      const base = state.labelFinal.length ? state.labelFinal : state.humanVsAi;
+      const q = document.getElementById("caseSearch").value.trim().toLowerCase();
+      const plat = document.getElementById("platformFilter").value;
+      const err = document.getElementById("errorFilter").value;
+
+      const getImgVal = r =>
+        cleanText(
+          r["연도/이미지"] || r["이미지"] || r["이미지명"] || r["플랫폼"] ||
+          r["평가 데이터셋"] || r["platform"] || r["연도"] || ""
+        );
+
+      const getErrList = r => [
+        cleanText(r["오답유형(1차)"]),
+        cleanText(r["오답유형(2차)"]),
+        cleanText(r["오답 유형 라벨"]),
+        cleanText(r["초기 오답 유형"]),
+        cleanText(r["오답유형"])
+      ].filter(v => v && v !== "-");
+
+      populateSelect(
+        document.getElementById("platformFilter"),
+        base.map(getImgVal)
+      );
+
+      const allErrors = [];
+      base.forEach(r => getErrList(r).forEach(v => allErrors.push(v)));
+      populateSelect(document.getElementById("errorFilter"), allErrors);
+
+      const filtered = base.filter(r => {
+        const pVal = getImgVal(r);
+        const eList = getErrList(r);
+        if (plat && pVal !== plat) return false;
+        if (err && !eList.includes(err)) return false;
+        if (q && !Object.values(r).map(cleanText).join(" ").toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const limit = showAllCases ? Math.max(filtered.length, 5) : 5;
+      renderTable(document.getElementById("casesTableWrap"), filtered, limit);
+
+      const btn = document.getElementById("toggleMoreCases");
+      const info = document.getElementById("casesCountInfo");
+      if (filtered.length <= 5) {
+        btn.style.display = "none";
+      } else {
+        btn.style.display = "inline-block";
+        btn.textContent = showAllCases ? "접기 (5개만 보기)" : "더보기";
+      }
+      info.textContent = filtered.length
+        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중`
+        : "";
+    }
+
+    function updateHintRerunTab() {
+      const source = state.labelFinal.length
+        ? state.labelFinal
+        : (state.accessCompare.length ? state.accessCompare : state.hintEffect);
+
+      const q = document.getElementById("hintSearch").value.trim().toLowerCase();
+      const selectedErrType = document.getElementById("hintErrorTypeFilter").value;
+      const selectedHintType = document.getElementById("hintTypeFilter").value;
+
+      const getErrTypes = r => [
+        cleanText(r["오답유형(1차)"]),
+        cleanText(r["오답유형(2차)"]),
+        cleanText(r["오답 유형 라벨"]),
+        cleanText(r["초기 오답 유형"]),
+        cleanText(r["오답유형"])
+      ].filter(v => v && v !== "-");
+
+      const getHintTypes = r => [
+        cleanText(r["힌트유형(1차)"]),
+        cleanText(r["힌트유형(2차)"]),
+        cleanText(r["힌트 유형"]),
+        cleanText(r["힌트유형"])
+      ].filter(v => v && v !== "-");
+
+      const allErrs = [];
+      source.forEach(r => getErrTypes(r).forEach(v => allErrs.push(v)));
+      populateSelect(document.getElementById("hintErrorTypeFilter"), allErrs);
+
+      const allHints = [];
+      source.forEach(r => getHintTypes(r).forEach(v => allHints.push(v)));
+      populateSelect(document.getElementById("hintTypeFilter"), allHints);
+
+      const filtered = source.filter(r => {
+        const errs = getErrTypes(r);
+        const hints = getHintTypes(r);
+        if (selectedErrType && !errs.includes(selectedErrType)) return false;
+        if (selectedHintType && !hints.includes(selectedHintType)) return false;
+        if (q && !Object.values(r).map(cleanText).join(" ").toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const limit = showAllHintRows ? Math.max(filtered.length, 5) : 5;
+      renderTable(document.getElementById("hintDatasetWrap"), filtered, limit);
+
+      const btn = document.getElementById("toggleMoreHintRows");
+      const info = document.getElementById("hintRowsCountInfo");
+      if (filtered.length <= 5) {
+        btn.style.display = "none";
+      } else {
+        btn.style.display = "inline-block";
+        btn.textContent = showAllHintRows ? "접기 (5개만 보기)" : "더보기";
+      }
+      info.textContent = filtered.length
+        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중`
+        : "";
+    }
+
+    function getQwenReasonVal(r) {
+      const status = cleanText(r["성공 여부"] || "");
+      const reason = cleanText(r["사유"] || "");
+      const note = cleanText(r["비고"] || "");
+      const target = `${status} ${reason}`;
+
+      if (/도구\s*호출\s*한도\s*초과/.test(target)) {
+        return "X - 도구 호출 한도 초과";
+      }
+      if (/응답\s*시간\s*초과/.test(target)) {
+        return "X - 응답 시간 초과";
+      }
+      if (/컨텍스트\s*초과/.test(target)) {
+        return "X - 컨텍스트 초과";
+      }
+      if (/오답/.test(status) || /^X\s*-?\s*오답/i.test(status)) {
+        return "X - 오답";
+      }
+
+      return status || reason || note || "";
+    }
+
+    function updateQwenTab() {
+      const q = document.getElementById("qwenSearch").value.trim().toLowerCase();
+      const st = document.getElementById("qwenStatusFilter").value;
+
+      populateSelect(
+        document.getElementById("qwenStatusFilter"),
+        state.qwen.map(getQwenReasonVal)
+      );
+
+      const filtered = state.qwen.filter(r => {
+        const sVal = getQwenReasonVal(r);
+        if (st && sVal !== st) return false;
+        if (q && !Object.values(r).map(cleanText).join(" ").toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const limit = showAllQwenRows ? Math.max(filtered.length, 8) : 8;
+      renderTable(document.getElementById("qwenTableWrap"), filtered, limit);
+
+      const btn = document.getElementById("toggleMoreQwenRows");
+      const info = document.getElementById("qwenRowsCountInfo");
+      if (filtered.length <= 8) {
+        btn.style.display = "none";
+      } else {
+        btn.style.display = "inline-block";
+        btn.textContent = showAllQwenRows ? "접기 (8개만 보기)" : "더보기";
+      }
+      info.textContent = filtered.length
+        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중`
+        : "";
+    }
+
+    async function initAutoLoad() {
+      const [summaryRawRes, ...objResults] = await Promise.all([
+        parseCsvRaw(DATA_FILES.summaryRaw),
+        parseCsvObjects(DATA_FILES.humanVsAi),
+        parseCsvObjects(DATA_FILES.patternStats),
+        parseCsvObjects(DATA_FILES.accessCompare),
+        parseCsvObjects(DATA_FILES.accessSummary),
+        parseCsvObjects(DATA_FILES.labelFinal),
+        parseCsvObjects(DATA_FILES.hintEffect),
+        parseCsvObjects(DATA_FILES.qwen)
+      ]);
+
+      let okCount = 0;
+      if (summaryRawRes.ok && summaryRawRes.rows.length) {
+        parseSummaryBlocks(summaryRawRes.rows);
+        okCount += 1;
+      }
+
+      const keys = ["humanVsAi", "patternStats", "accessCompare", "accessSummary", "labelFinal", "hintEffect", "qwen"];
+      objResults.forEach((res, idx) => {
+        if (res.ok && res.rows.length) {
+          state[keys[idx]] = res.rows;
+          okCount += 1;
+        }
+      });
+
+      const statusEl = document.getElementById("loadStatus");
+      if (okCount > 0) {
+        statusEl.textContent = `./data 주요 CSV ${okCount}/8개 자동 로드 완료`;
+        statusEl.classList.remove("warn");
+      } else {
+        statusEl.textContent = `./data 자동 로드 미감지 (수동 CSV 추가 사용)`;
+        statusEl.classList.add("warn");
+      }
+
+      updateErrorTypesTab();
+      updateHintRerunTab();
+      updateQwenTab();
+    }
+
+    document.getElementById("manualCsvInput").addEventListener("change", e => {
+      [...e.target.files].forEach(file => {
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: res => {
+            const name = file.name.toLowerCase();
+            if (name.includes("qwen")) state.qwen = res.data;
+            else if (name.includes("접근허용") || name.includes("힌트")) state.accessCompare = res.data;
+            else if (name.includes("사람vsai") || name.includes("오답라벨링")) state.labelFinal = res.data;
+            updateErrorTypesTab();
+            updateHintRerunTab();
+            updateQwenTab();
+          }
+        });
+      });
+    });
+
+    ["caseSearch", "platformFilter", "errorFilter"].forEach(id =>
+      document.getElementById(id).addEventListener("input", () => {
+        showAllCases = false;
+        updateErrorTypesTab();
+      })
+    );
+    document.getElementById("resetCaseFilters").addEventListener("click", () => {
+      document.getElementById("caseSearch").value = "";
+      document.getElementById("platformFilter").value = "";
+      document.getElementById("errorFilter").value = "";
+      showAllCases = false;
+      updateErrorTypesTab();
+    });
+    document.getElementById("toggleMoreCases").addEventListener("click", () => {
+      showAllCases = !showAllCases;
+      updateErrorTypesTab();
+    });
+
+    ["hintSearch", "hintErrorTypeFilter", "hintTypeFilter"].forEach(id =>
+      document.getElementById(id).addEventListener("input", () => {
+        showAllHintRows = false;
+        updateHintRerunTab();
+      })
+    );
+    document.getElementById("resetHintFilters").addEventListener("click", () => {
+      document.getElementById("hintSearch").value = "";
+      document.getElementById("hintErrorTypeFilter").value = "";
+      document.getElementById("hintTypeFilter").value = "";
+      showAllHintRows = false;
+      updateHintRerunTab();
+    });
+    document.getElementById("toggleMoreHintRows").addEventListener("click", () => {
+      showAllHintRows = !showAllHintRows;
+      updateHintRerunTab();
+    });
+
+    ["qwenSearch", "qwenStatusFilter"].forEach(id =>
+      document.getElementById(id).addEventListener("input", () => {
+        showAllQwenRows = false;
+        updateQwenTab();
+      })
+    );
+    document.getElementById("resetQwenFilters").addEventListener("click", () => {
+      document.getElementById("qwenSearch").value = "";
+      document.getElementById("qwenStatusFilter").value = "";
+      showAllQwenRows = false;
+      updateQwenTab();
+    });
+    document.getElementById("toggleMoreQwenRows").addEventListener("click", () => {
+      showAllQwenRows = !showAllQwenRows;
+      updateQwenTab();
+    });
+
+    initAutoLoad();
+  </script>
+</body>
+</html>
