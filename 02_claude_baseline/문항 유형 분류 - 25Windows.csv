@@ -1,0 +1,30 @@
+,,,
+,Magnet Virtual Summit 2026 CTF - Mac ,,
+,,,
+,원문 질문,유형,보조 유형
+,"What is the SID for the user ""chick""?",T1,-
+,"When was the last logoff time for the user ""chick""? (YYYY-MM-DD HH:MM:SS)",T2,T1
+,What is the host URL that crow.jpg was downloaded from?,T1,T2
+,What popular game was installed on the computer?,T1,-
+,On what social media platform did Mary look at a Burlington news account?,T3,-
+,Where did Mary look for help with her coding questions?,T3,-
+,What language was Mary's first program written in?,T1,-
+,What is the creation date for Mary’s user account? (YYYY-MM-DD HH:MM:SS),T1,T2
+,What was the name of the geocache that was completed?,T3,T2
+,What file was an anti-forensics tool used on?,T2,T1
+,What email service is Mary using other than gmail?,T3,-
+,What is the default browser set as?,T1,-
+,What time was the tiktok that Mary watched posted? (YYYY-MM-DD HH:MM:SS UTC),T3,T2
+,What was the suggestion count when Mary was going to play a popular word-based browser game?,T3,-
+,What is Mary’s username on geocaching.com?,T3,-
+,"What is the hashed password for the user ""chick""?",T1,-
+,What was the username of the person who saw the clouds coming in at 6:30 while doing a geocache?,T3,T2
+,What suspicious command line tool was installed on Mary’s system?,T1,-
+,What does the file sucess.txt.txt contain?,T4,T1
+,,,
+,,행 라벨,개수 : 유형
+,,T1,8
+,,T2,2
+,,T3,8
+,,T4,1
+,,총계,19
