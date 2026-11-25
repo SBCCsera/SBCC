@@ -1,0 +1,62 @@
+﻿최종탭 · 문제별 기본 정보 (오답 59문항),,,,,,,,,,,,,
+,,,,,,,,,,,,,
+번호,연도,문항유형,질문,오답 횟수,오답유형(1차),오답유형(2차),오답유형 일치,힌트유형(1차),힌트유형(2차),힌트유형 일치,복구(1차),복구(2차),문제 단위 복구 결과
+2,2026,T2 사용자·기기,What was the last time in UTC Clash Of Clans was closed? (Format: YYYY-MM-DD HH:MM:SS),2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+4,2026,T3 앱 데이터,What is the Ingress rating of the security camera that supports night vision?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+5,2026,T3 앱 데이터,What was the answer to the first Wordle puzzle solved?,1,-,REASONING,단독 오답,-,Oracle Evidence,단독 오답,-,O,전부 복구
+6,2026,T3 앱 데이터,What is the name of the client the user was most recently working on?,2,PARSING,DISCOVERY,불일치,Enhanced Access,Locator,불일치,X,O,일부 복구
+8,2026,T1 시스템·파일,What class had the most badges?,1,EXTRACTION,-,단독 오답,Enhanced Access,-,단독 오답,X,-,전부 실패
+11,2026,T3 앱 데이터,What is the hex code of the content color for the entry that expires on 2025-12-01 15:06:45?,1,PARSING,-,단독 오답,Enhanced Access,-,단독 오답,X,-,전부 실패
+12,2026,T4 복합,What was the PID of the app that was in focus at 2025-12-15 17:48:09?,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+13,2026,T1 시스템·파일,When in UTC was the timezone set? (YYYY-MM-DD HH:MM:SS),2,EXTRACTION,DISCOVERY,불일치,Enhanced Access,Locator,불일치,X,X,전부 실패
+15,2026,T3 앱 데이터,What Instagram handle does User ID 2278169415 belong to?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,O,O,전부 복구
+17,2026,T1 시스템·파일,In UTC when was the last iCloud backup? (YYYY-MM-DD HH:MM:SS),1,-,PARSING,단독 오답,-,Enhanced Access,단독 오답,-,X,전부 실패
+18,2026,T2 사용자·기기,What was the farthest distance the user logged in meters? (Round to the nearest hundredth),2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+19,2026,T3 앱 데이터,How many people did the user message expressing concern about Daniel?,2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+20,2026,T1 시스템·파일,What genre of app did the user download the most of?,1,-,EXTRACTION,단독 오답,-,Enhanced Access,단독 오답,-,O,전부 복구
+21,2026,T1 시스템·파일,What is the make and model of the car that was photographed without an iPhone?,1,EXTRACTION,-,단독 오답,Enhanced Access,-,단독 오답,X,-,전부 실패
+22,2026,T4 복합,What airport was the phone near when it pinged off of a cell tower on 2025-12-16 22:47:24 (UTC)?,1,-,DISCOVERY,단독 오답,-,Locator,단독 오답,-,X,전부 실패
+25,2026,T4 복합,What is the mascot of the frozen dessert shop that the user visits a lot?,1,-,EXTRACTION,단독 오답,-,Enhanced Access,단독 오답,-,X,전부 실패
+26,2026,T4 복합,What are the recorded coordinates of the place the user went to comment about a certain adult beverage?,1,EXTRACTION,-,단독 오답,Enhanced Access,-,단독 오답,O,-,전부 복구
+28,2026,T4 복합,"What word did the user misspell, then correct before sending over text on a Friday? (Format: type the misspelled word as-is)",1,-,DISCOVERY,단독 오답,-,Locator,단독 오답,-,X,전부 실패
+29,2026,T2 사용자·기기,What is the UUID of the process that is related to an initiated shutdown?,2,DISCOVERY,REASONING,불일치,Locator,Oracle Evidence,불일치,X,O,일부 복구
+30,2026,T4 복합,How much time elapsed between Tom reading a phone number and sending their first message on a different platform? (Format: HH:MM:SS.sss),2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+32,2026,T2 사용자·기기,At what time did the user last access a URL using Siri in UTC? (Format: YYYY-MM-DD HH:MM:SS),1,DISCOVERY,-,단독 오답,Locator,-,단독 오답,O,-,전부 복구
+33,2026,T2 사용자·기기,What was the lowest battery level the device reached?,2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+35,2026,T3 앱 데이터,How many tasks did the user have on 2025-12-10?,1,DISCOVERY,-,단독 오답,Locator,-,단독 오답,O,-,전부 복구
+36,2026,T1 시스템·파일,What is the IMEI of the connected iPhone?,1,-,DISCOVERY,단독 오답,-,Locator,단독 오답,-,O,전부 복구
+43,2026,T1 시스템·파일,What was the logical size of the second most recent backup?,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+44,2026,T3 앱 데이터,What was the value associated with the most recent iCloud operation?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+47,2026,T2 사용자·기기,"At what time (UTC 24hr time, format HH:MM) did the user join the network of a cafe on the first day of the month?",2,EXTRACTION,DISCOVERY,불일치,Enhanced Access,Locator,불일치,X,O,일부 복구
+49,2025,T2 사용자·기기,When was the last logoff time for the user “chick”? (YYYY-MM-DD HH:MM:SS),2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+55,2025,T1 시스템·파일,What is the creation date for Mary’s user account? (YYYY-MM-DD HH:MM:SS),1,DISCOVERY,-,단독 오답,Locator,-,단독 오답,X,-,전부 실패
+57,2025,T2 사용자·기기,What file was an anti-forensic tool used on?,1,-,REASONING,단독 오답,-,Oracle Evidence,단독 오답,-,O,전부 복구
+61,2025,T3 앱 데이터,What was the suggestion count when Mary was going to play a popular word-based browser game?,1,-,DISCOVERY,단독 오답,-,Locator,단독 오답,-,X,전부 실패
+63,2025,T1 시스템·파일,What is the hashed password for the user “chick”?,2,REFUSAL,REFUSAL,일치,Oracle Evidence,Oracle Evidence,일치,X,X,전부 실패
+64,2025,T3 앱 데이터,What was the username of the person who saw the clouds coming in at 6:30 while doing a geocache?,1,EXTRACTION,-,단독 오답,Enhanced Access,-,단독 오답,O,-,전부 복구
+65,2025,T1 시스템·파일,What suspicious command line tool was installed on Mary’s system?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+66,2025,T4 복합,What does the file sucess.txt.txt contain?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+67,2025,T2 사용자·기기,What was the most recent battery level recorded by the Chromebook?,2,REASONING,REASONING,일치,Oracle Evidence,Oracle Evidence,일치,O,O,전부 복구
+71,2025,T2 사용자·기기,How was the device most commonly woken up?,1,REASONING,-,단독 오답,Oracle Evidence,-,단독 오답,O,-,전부 복구
+72,2025,T1 시스템·파일,How many months was Mary employed with her company?,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+73,2025,T3 앱 데이터,When did the user first interact with a fanfiction website? (UTC) Format: YYYY-MM-DD HH:MM:SS,2,EXTRACTION,DISCOVERY,불일치,Enhanced Access,Locator,불일치,X,X,전부 실패
+75,2025,T1 시스템·파일,What is the size of Ruth’s advertisement in bytes?,1,EXTRACTION,-,단독 오답,Enhanced Access,-,단독 오답,O,-,전부 복구
+77,2025,T1 시스템·파일,What is the version of the noise suppression software?,1,-,PARSING,단독 오답,-,Enhanced Access,단독 오답,-,X,전부 실패
+79,2025,T3 앱 데이터,What is the ID of the URL with the most number of hits?,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,O,일부 복구
+80,2025,T4 복합,What is the name of the current champion of the sport Ruth was trying to learn?,2,REASONING,REASONING,일치,Oracle Evidence,Oracle Evidence,일치,X,O,일부 복구
+82,2025,T1 시스템·파일,How many shirts are in the ad,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+87,2025,T2 사용자·기기,How many words typed were autocorrected?,1,-,PARSING,단독 오답,-,Enhanced Access,단독 오답,-,X,전부 실패
+89,2025,T1 시스템·파일,What color hair does Ruth's Bitmoji have?,2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+90,2025,T1 시스템·파일,What was the first AI tool installed on the device?,1,DISCOVERY,-,단독 오답,Locator,-,단독 오답,X,-,전부 실패
+91,2025,T3 앱 데이터,What was the IP address logged from Discord?,2,DISCOVERY,EXTRACTION,불일치,Locator,Enhanced Access,불일치,O,O,전부 복구
+98,2025,T1 시스템·파일,"Using format YYYY-MM, When was this device purchased?",2,PARSING,PARSING,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+101,2025,T4 복합,What link redirects you to apply for a job?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+102,2025,T1 시스템·파일,When was the last written record created? (format YYYY-MM-DD HH:MM:SS),2,EXTRACTION,DISCOVERY,불일치,Enhanced Access,Locator,불일치,O,X,일부 복구
+103,2025,T3 앱 데이터,What animal was in the TikTok sent via text?,1,REASONING,-,단독 오답,Oracle Evidence,-,단독 오답,O,-,전부 복구
+110,2025,T1 시스템·파일,What degree does Mary have?,2,DISCOVERY,EXTRACTION,불일치,Locator,Enhanced Access,불일치,X,X,전부 실패
+111,2025,T1 시스템·파일,What is the name of the structure seen in the picture taken at night?,2,REASONING,PARSING,불일치,Oracle Evidence,Enhanced Access,불일치,X,O,일부 복구
+112,2025,T3 앱 데이터,What language was the nature website in?,2,DISCOVERY,DISCOVERY,일치,Locator,Locator,일치,X,X,전부 실패
+113,2025,T3 앱 데이터,What singer appeared in a TikTok video watched on 2024-11-15 at 1:01:26 AM UTC?,2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+116,2025,T2 사용자·기기,How many spam numbers were created on 2024-11-27 at 02:42:52.972 UTC?,2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
+117,2025,T3 앱 데이터,What’s the numerical rating for the app with the most installs?,2,EXTRACTION,EXTRACTION,일치,Enhanced Access,Enhanced Access,일치,X,O,일부 복구
+118,2025,T3 앱 데이터,What is the hex code for the Profile Picture with the number (802) 495-9063?,2,PARSING,EXTRACTION,불일치,Enhanced Access,Enhanced Access,일치,X,X,전부 실패
