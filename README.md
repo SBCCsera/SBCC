@@ -17,7 +17,7 @@
   - **목표 전환 (118문항 평가 및 오답 라벨링 후)**: 전체 118문항 기준선 평가와 오답 라벨링을 진행하면서, 현 단계에서는 성급하게 플러그인을 구현하기보다 AI 에이전트가 실제로 막히는 지점(추론 이전 단계 병목·도구 제약 등)을 깊이 분석하는 것이 우선이라고 판단했습니다. 이에 따라 후속 연구와 실무 개발에 기초 자료로 기여할 수 있도록 **심층 병목 분석 및 학술 논문 작성**으로 방향을 전환했습니다.
 - **검증 기준**:
   - 전체 118문항 기준선 평가 **최소 3회** 반복 검증 시도
-  - 오답 문항 대상 힌트 제공 시 **50% 이상** 복구 여부 테스트
+  - 사람과 AI의 탐색·판단 방식 차이 규명 (대표 오답 사례 기준 실제 탐색 경로 및 도구 호출 수 비교)
   - **2개 이상** 이종 모델 교차 검증 수행
 
 ---
@@ -43,7 +43,7 @@
 - **Docker 로컬 실행**: 저장소 루트의 `Dockerfile`, `index.html`, `data/`를 기반으로 로컬 환경에서 동일하게 재현할 수 있습니다.
 
 ```bash
-git clone [https://github.com/SBCCsera/SBCC.git](https://github.com/SBCCsera/SBCC.git)
+git clone https://github.com/SBCCsera/SBCC.git
 cd SBCC
 docker build -t sbcc-dashboard .
 docker run -d -p 8080:80 sbcc-dashboard
@@ -55,7 +55,7 @@ docker run -d -p 8080:80 sbcc-dashboard
 
 | 이름 | GitHub | 담당 역할 및 주요 기여 내용 |
 | :--- | :--- | :--- |
-| **진세라** (팀장) | `@SBCCsera` | 선행연구, 문제 유형 분석 및 분류, 2차 실행 및 오답 라벨링, `Discovery/Reasoning` 오답 심층 분석, 결과 웹 대시보드 구축 및 배포, 발표 ppt, 최종 보고서 및 논문 초안 `Discovery/Reasoning` 파트 |
+| **진세라** (팀장) | `@SBCCsera` | 선행연구, 문제 유형 분석 및 분류, 2차 실행 및 오답 라벨링, `Discovery/Reasoning` 오답 심층 분석, 결과 웹 대시보드 구축 및 배포, 발표 PPT, 최종 보고서 및 논문 초안 `Discovery/Reasoning` 파트 |
 | **박제윤** | `@SBCCjeyoon` | 선행연구, 1차 실행 및 오답 라벨링, 힌트 구체화 비교, `Extraction/Parsing` 재검증 및 분석, `Discovery/Reasoning` 세부 사례 트리 추가, 포스터, 최종 보고서 및 논문 초안 나머지 파트 |
 | **전시연** | `@wjstldus616` | 선행연구, 오답 라벨링 힌트 검증 파트 일부분, `Qwen 3.8 Max` 교차 검증, 연구 시연 동영상, 최종 보고서 및 논문 초안 `Qwen` 파트 |
 
