@@ -1,0 +1,27 @@
+,,,
+,Magnet Virtual Summit 2026 CTF - Mac ,,
+,,,
+,원문 질문,유형,보조 유형
+,What Instagram handle does User ID 2278169415 belong to?,T3,-
+,What item does the user need to buy for Christmas?,T3,-
+,In UTC when was the last iCloud backup? (YYYY-MM-DD HH:MM:SS),T1,T2
+,What was the farthest distance the user logged in meters? (Round to the nearest hundredth),T2,-
+,How many people did the user message expressing concern about Daniel?,T3,T2
+,What genre of app did the user download the most of?,T1,T3
+,What is the make and model of the car that was photographed without an iPhone?,T1,-
+,What airport was the phone near when it pinged off of a cell tower on 2025-12-16 22:47:24 (UTC)?,T4,T2
+,What is the name including extension of the purple tagged file?,T1,-
+,What secondhand item was the user searching for?,T3,-
+,What is the mascot of the frozen dessert shop that the user visits a lot?,T4,T2
+,What are the recorded coordinates of the place the user went to comment about a certain adult beverage?,T4,T3
+,What port was the host directed through for a sign-in?,T3,T2
+,"What word did the user misspell, then correct before sending over text on a Friday? (Format: type the misspelled word as-is)",T4,T3
+,What is the UUID of the process that is related to an initiated shutdown?,T2,T1
+,How much time elapsed between Tom reading a phone number and sending their first message on a different platform? (Format: HH:MM:SS.sss),T4,T3
+,,,
+,,행 라벨,개수 : 유형
+,,T1,4
+,,T2,2
+,,T3,5
+,,T4,5
+,,총계,16

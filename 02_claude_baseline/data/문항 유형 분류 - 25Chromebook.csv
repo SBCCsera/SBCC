@@ -1,0 +1,28 @@
+,,,
+,Magnet Virtual Summit 2026 CTF - Mac ,,
+,,,
+,원문 질문,유형,보조 유형
+,What was the most recent battery level recorded by the Chromebook?,T2,T1
+,What is the vendor ID for the touchpad?,T1,-
+,What was the IP address of the Chromebook?,T2,T1
+,What number is stored in contacts? Format: +X (XXX) XXX-XXXX,T1,-
+,How was the device most commonly woken up?,T2,T1
+,How many months was Mary employed with her company?,T1,-
+,When did the user first interact with a fanfiction website? (UTC) Format: YYYY-MM-DD HH:MM:SS,T3,T2
+,What string was autofilled the most?,T3,-
+,What is the size of Ruth's advertisement in bytes?,T1,-
+,What TV show does Ruth have an interest in?,T3,-
+,What is the version of the noise suppression software?,T1,-
+,What date was the game installed on the system? YYYY-MM-DD,T1,T2
+,What is the ID of the URL with the most number of hits?,T3,-
+,What is the name of the current champion of the sport Ruth was trying to learn?,T4,T3
+,What region had the lowest latency for Discord?,T3,T2
+,How many shirts are in the ad?,T1,
+,,,
+,,,
+,,행 라벨,개수 : 유형
+,,T1,7
+,,T2,3
+,,T3,5
+,,T4,1
+,,총계,16

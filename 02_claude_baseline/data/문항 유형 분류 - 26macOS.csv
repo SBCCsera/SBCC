@@ -1,0 +1,33 @@
+,,,
+,Magnet Virtual Summit 2026 CTF - Mac ,,
+,,,
+,원문 질문,유형,보조 유형
+,"What is the password hashing algorithm for the ""alexmaurie"" user?",T1,-
+,"At what time did the user last access a URL using Siri in UTC? 
+(Format: YYYY-MM-DD HH:MM:SS)",T2,T3
+,What was the lowest battery level the device reached?,T2,-
+,What was the name of the racing game the user installed?,T1,-
+,How many tasks did the user have on 2025-12-10?,T3,-
+,What is the IMEI of the connected iPhone?,T1,T2
+,What is the UUID of the ZSH terminal session restored on 2025-11-20 19:31:51(UTC)?,T2,T1
+,What date did Alex become eligible to work at ISS? (Format: YYYY-MM-DD),T1,-
+,What version of Python did the user have installed?,T1,-
+,What is the Bluetooth address of Alex's iPhone?,T1,T2
+,What's the MAC address of the router that the user was leased on 2025-12-24 09:48:49 (UTC)?,T2,T1
+,How many seconds did it take for the system to totally install a 3rd-party cloud storage app? (Format: xx.xx),T1,T2
+,What was the logical size of the second most recent backup?,T1,-
+,What was the value associated with the most recent iCloud operation?,T3,T2
+,How many total knight moves were played?,T3,-
+,What is the exec_cdhash of the event that occurred at 2025-12-01 09:23:52 PM?,T2,T1
+,"At what time (UTC 24hr time, format HH:MM) did the user join the network of a cafe on the first day of the month?",T2,T4
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,행 라벨,개수 : 유형
+,,T1,8
+,,T2,6
+,,T3,3
+,,총계,17

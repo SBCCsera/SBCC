@@ -1,0 +1,31 @@
+,,,
+,Magnet Virtual Summit 2026 CTF - Mac ,,
+,,,
+,원문 질문,유형,보조 유형
+,What version of iOS,T1,-
+,What is the device's phone number?,T1,-
+,What was the contact name stored on 2024-11-13 5:45:05.000 PM,T1,T2
+,"Out of all the incoming calls, how many were answered?",T2,-
+,How many words typed were autocorrected?,T2,T3
+,What time did Ruth plan to meet Mary at Black Cap?,T3,T2
+,What color hair does Ruth's Bitmoji have?,T1,T3
+,What was the first AI tool installed on the device?,T1,-
+,What was the IP address logged from Discord?,T3,T2
+,What is the Latitude of Nashville in the Weather App? Format: xx.xxxxxxx,T1,T2
+,What is the answer to the second equation in notes?,T3,T1
+,What app was denied permission to use Microphone?,T1,T3
+,"If Ruth bought an item for $40 or more, she gets her second one 40% off with what code?",T3,-
+,"In YYYY-MM-DD HH:MM:SS format, when was the TikTok video posted?",T3,T2
+,What beach was searched for?,T3,T2
+,"Using format YYYY-MM, When was this device purchased?",T1,-
+,Who is the author of the October 2023 wallpaper?,T1,-
+,What popular coffee company did Ruth get coffee from?,T4,T2
+,What link redirects you to apply for a job?,T4,T1
+,When was the last written record created? (format YYYY-MM-DD HH:MM:SS),T1,T4
+,,,
+,,행 라벨,개수 : 유형
+,,T1,10
+,,T2,2
+,,T3,6
+,,T4,2
+,,총계,20
