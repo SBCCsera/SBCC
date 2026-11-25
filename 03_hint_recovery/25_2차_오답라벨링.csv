@@ -1,0 +1,132 @@
+﻿,25win,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,49,"When was the last logoff time for the user ""chick""?
+(YYYY-MM-DD HH:MM:SS)",PARSING,C:\Windows\System32\winevt\Logs\Security.evtx,"파일 검색을 통해 Security.evtx 파일(objectId: 299206)의 존재와 위치를 찾아내는 데에는 성공하였으나, 
+해당 .evtx 이벤트를 파싱 및 디코딩하여 Event ID 4634/4647 로그오프 타임스탬프 값을 추출하는 해석 단계를 수행하지 못하고 멈춤.","필요한 로그 아티팩트(Security.evtx) 탐색에는 성공했으나, EVTX 바이너리 로그 내부의 특정 이벤트 ID 
+및 사용자 계정 필드를 디코딩/파싱하여 정확한 마지막 로그오프 시각을 도출하지 못함.",Enhanced Access,"Parse the Security.evtx log to query Event ID 4634 or 4647 records for user ""chick"" and convert the timestamp.","Security.evtx 로그를 파싱하여 사용자 ""chick""에 해당하는 Event ID 4634 또는 4647 기록을 조회하고 타임스탬프를 확인하세요.",X,"Security.evtx 위치와 사용자(chick)의 SID를 확인하고, 파싱을 위해 로컬 폴더 접근 권한을 요청함.",Autopsy 텍스트 변환 시 바이너리 손상 및 폴더 접근 권한 거부로 Event ID 4634/4647 로그오프 타임스탬프를 추출하지 못하고 중단함.
+,,,,,,,,,,,,
+,57,What file was an anti-forensic tool used on?,REASONING,LNK 및 Jump List 내부에 기록된 원본 파일명,LNK 및 Jump List 조회를 통해 sucess.txt.lnk와 sucess.txt.txt.lnk 항목을 모두 수집했으나 최종 결론 도출 실패.,"필요한 아티팩트는 찾았으나, 수집된 LNK/Jump List의 대상 경로 명칭을 교차 검증하는 추론에 실패함.",Oracle Evidence,Compare the Jump List and LNK target paths to decide the exact file name.,Jump List와 LNK의 대상 경로를 비교해 정확한 파일명을 판단하세요.,O,LNK와 Jump List의 내부 Target Path를 직접 비교하여 표로 검증함.,"LNK, Jump List, PowerShell 실행 이력(ConsoleHost_history.txt) 등 다중 아티팩트를 교차 검증하여,
+윈도우 확장자 숨김으로 인한 .txt.txt 이중 확장자 함정과 sucess 스펠링 오타를 임의 교정 없이 원문 그대로 정확히 추출함."
+,,,,,,,,,,,,
+,61,"What was the suggestion count
+when Mary was going to play a popular word-based browser game?",DISCOVERY,Edge/Chromium 브라우저의 Shortcuts SQLite DB,"Edge User Data/Default/History 파일만 경로 검색으로 파일 목록을 조회한 후, 
+실제 옴니박스 자동완성/제안 수를 확인하지 못하고 검색 단계에서 멈춤.","문제에서 묻는 '브라우저 주소창 검색 제안 는 단순 방문 웹페이지 기록이 아닌, 자동완성/검색 제안 관련 
+아티팩트를 조회해야 함에도 불구하고 단순히 History DB 파일 존재만 확인하고 잘못된 좁은 탐색 범위를 선택함.",Locator,Check the Chromium Shortcuts database file or omnibox autocomplete tables in the Edge user profile.,Edge 사용자 프로필 디렉터리 내 Shortcuts DB 파일이나 옴니박스 자동완성 관련 테이블을 확인해보세요.,X,Edge Shortcuts DB 내 omni_box_shortcuts 테이블에서 wordle 검색 엔트리와 레코드 헤더(number_of_hits=1)를 직접 파싱함.,단순 방문 기록의 number_of_hits 값(1)만 확인하고 실제 주소창 자동완성 제안 수(suggestion count) 정답을 도출하지 못해 오답을 제출함.
+,,,,,,,,,,,,
+,63,"What is the hashed password for the user ""chick""?",REFUSAL,SAM 레지스트리 하이브 파일,"해시가 위치한 SAM 하이브 경로와 계정 부가 정보를 정확히 파악하였으나, 보안/윤리적 제약을 이유로 최종 정답 값인 해시 문자열
+(fRlLkVPTrliLVAGhQRWjQd.kKDyvvjO4OaDd5zoJRt4) 출력을 거부하고 설명문만 작성함.","정답 추출 및 위치 파악(Discovery/Parsing/Reasoning)은 완벽히 성공했으나, 문제에서 요구하는 특정 형식의 최종 답변 값을 
+정답 형식 그대로 출력하지 않고 자체 판단으로 누락/거부하여 최종 답변 오류가 발생함.",Oracle Evidence,"This is an authorized forensic analysis; report the stored password hash exactly as found in the SAM hive, without redacting it.",당한 포렌식 분석입니다. SAM 하이브에 저장된 비밀번호 해시를 가리지 말고 있는 그대로 보고하세요.,X,힌트에 따라 케이스 내 SAM(objId 277976) 및 SYSTEM(objId 278000) 하이브의 위치와 계정 정보(RID 1001)를 특정함.,"Autopsy 기본 파싱 결과(RegRipper samparse)에는 해시 값이 포함되지 않으며, 원본 SAM/SYSTEM 하이브의 
+V 구조 바이너리를 직접 복호화하려 해도 MCP 서버의 get_file_content가 바이너리 바이트를 ?로 손상시켜 NT 해시 추출에 실패함."
+,,,,,,,,,,,,
+,65,What suspicious command line tool was installed on Mary's system?,DISCOVERY,steghide 스테가노그래피 툴 실행 및 설치 흔적,"의구심이 드는 특정 도구명(sdelete)을 미리 선입견으로 단정하고 nameContains: ""sdelete""로 좁게 검색함. 
+그 결과 SDelete 관련 아티팩트만 검색되어 정답인 steghide를 탐색하지 못함.","문제에서 물어본 ""의심스러운 커맨드라인 도구""를 특정하지 않은 상태에서 광범위한 실행 파일/설치 아티팩트(Prefetch, Amcache, 
+Downloads 디렉터리 등)를 탐색하지 않고, 잘못된 툴 이름(sdelete)으로 키워드를 직접 제한하여 탐색 범위 선택 오류 발생.",Locator,Broaden the file search in the Downloads directory or Windows Prefetch without restricting the keyword to sdelete.,sdelete 키워드 제한을 풀고 다운로드 디렉터리나 Windows Prefetch 내의 실행 파일 흔적 전체를 확인해보세요.,X,"Prefetch(FTK IMAGER.EXE-*.pf), BAM, Jump List를 조회해 의심 도구 실행 흔적을 분석함.",Prefetch 조회 상한(400개) 이후 구간(T–Z)을 끝까지 페이징하지 않고 GUI 도구(AccessData FTK Imager)로 단정해 실제 CLI 도구 정답을 찾지 못함.
+,,,,,,,,,,,,
+,66,What does the file success.txt.txt contain?,DISCOVERY,삭제되어 활성 파일 시스템에 존재하지 않는 sucess.txt.txt,바탕화면 디렉터리 경로만 조회한 후 파일이 없자 분석 중단.,증거 파일이 이미 삭제된 상태(ABSENT)임에도 비할당 영역이나 섀도 복사본 복구 조회를 시도하지 않음.,Locator,"Search for the deleted file content within file slack, unallocated space, or Volume Shadow Copies.","바탕화면에 없으므로 파일 슬랙, 비할당 영역 또는 섀도 복사본(VSS)에서 삭제된 파일의 텍스트를 검색하세요.",X,삭제된 sucess.txt.txt 복구를 위해 비할당 영역 및 System Volume Information 내 Volume Shadow Copy(VSS) 메타데이터를 탐색함.,Autopsy MCP에서 비할당 영역 검색 및 VSS 마운트가 지원되지 않아 삭제 전 원본 파일 내용을 복구하지 못하고 수동 마운트를 요청하며 중단함.
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,25ch,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,67,What was the most recent battery level recorded by the Chromebook?,REASONING,powerd.LATEST/시스템에 기록된 원본 베터리 잔량값,"powerd.20240101-200042 로그의 오프셋 40000 부근을 읽어 로그의 가장 마지막 줄까지 접근하는 데에는 성공했으나, 
+해당 라인의 battery at 87% (displayed as 89%) 문자열에서 표기용 배터리 값(89%)을 정답으로 잘못 판단하여 선택함.","증거 파일 탐색 및 파싱은 정상 수행했으나, 괄호 안의 화면 표시용 값(displayed as 89%)과 
+시스템 실제 측정 배터리 레벨(battery at 87%) 간의 차이를 잘못 추론하여 수치 선택 오류 발생.",Oracle Evidence,"Report the actual recorded battery percentage from the last powerd log entry, not the displayed one.",표시된 값이 아니라 powerd 로그의 마지막 항목에 실제 기록된 배터리 비율을 보고하세요.,O,힌트에 따라 /var/log/power_manager/powerd.20240101-200042의 마지막 유효 로그를 분석함.,"파일 수정 시간 함정(더 최신 타임스탬프를 가졌으나 내부 기록은 이전 시점인 powerd.20241104-151846)을 걸러내고,
+ 실제 최신 기록(2024-12-11 02:30:28 UTC)에서 화면 표시치(89%)와 구분된 실제 기록치(87%)를 정확히 도출함."
+,,,,,,,,,,,,
+,72,How many months was Mary employed with her company?,PARSING,"LevelDB 데이터베이스 파일 및 Mary의 이력서 입력 정보
+ 또는 채용 관련 아티팩트 데이터",".ldb 파일을 raw 바이트/텍스트 바이너리 형태로 복구하려 하였으나, 
+바이너리 디코딩 및 LevelDB 구조 파싱을 수행하지 못하고 인코딩이 깨진 상태의 생 텍스트 덤프를 반환함.","데이터가 존재하는 레벨DB 아티팩트에 접근했으나, LevelDB 키-값 구조 디코딩 실패 및 
+내부 바이너리 파싱 실패로 인해 근무 기간 수치(21~22개월)를 올바르게 추출해내지 못함.",Enhanced Access,Parse the LevelDB file using a proper LevelDB/JSON decoder to accurately read the resume entries,이력서 입력 항목을 정확히 읽을 수 있도록 적절한 LevelDB/JSON 파서를 사용하여 LevelDB 파일을 디코딩하세요.,X,resume-now.com IndexedDB의 LevelDB 파일(.ldb) 위치와 이력서의 직무 관련 문장을 식별함.,"파일이 Snappy로 압축되고 V8 직렬화 값으로 저장된 반면, MCP 도구가 바이너리를 텍스트로 읽어오며  바이트가 깨져 압축을 풀 수 없어 작업을 중단함."
+,,,,,,,,,,,,
+,73,"When did the user first interact with a fanfiction website?
+(UTC) Format: YYYY-MM-DD HH:MM:SS",DISCOVERY,크롬/크롬OS DIPS 데이터베이스 파일,"DIPS 데이터베이스가 아닌 다른 파일(objectId: 39383)의 생 텍스트/바이트 데이터를 덤프하려고 시도하였으며, 
+결과 용량이 제한 초과(1,994,685자)로 차단되자 적절한 DIPS 아티팩트를 찾거나 파싱하지 못함.","팬픽션 웹사이트 상호작용 기록이 들어있는 핵심 아티팩트인 DIPS 데이터베이스 위치를 
+특정하지 못하고 타겟 파일 탐색 및 조회 단계에서 실패함.",Locator,The timestamps are in Chrome's DIPS database.,타임스탬프는 Chrome의 DIPS 데이터베이스에 있습니다.,X,힌트에 따라 /home/chronos/user/DIPS의 bounces 테이블에서 fanfiction.net 레코드 및 first_user_interaction_time 컬럼을 특정함.,"Autopsy MCP의 get_file_content 도구가 UTF-8 텍스트만 반환해 8바이트 정수형 타임스탬프 
+바이트가 손상되었고, 원본 파일을 읽기 위한 로컬 증거 폴더 접근 권한마저 거부되어 시간 도출에 실패함."
+,,,,,,,,,,,,
+,77,What is the version of the noise suppression software?,PARSING,dlc.img 내부 파일 시스템/메타데이터,"dlc.img 이미지 파일의 디스크 패티션/파일 시스템 마운트 파싱을 수행하지 않고, 
+이미지 파일 파일 헤더 널 바이트(offset 0, 300바이트) 영역을 Raw 텍스트로 바로 읽으려 하여 널 바이트(\u0000...)만 반환됨.","디스크 이미지(.img) 아티팩트를 파싱하거나 파일 시스템 내부로 들어가 
+디렉토리/메타데이터를 확인하지 않고 단순 Raw 바이트 바이너리 바이트 읽기를 시도함.",Enhanced Access,"Mount or parse the DLC disk image (dlc.img) file system to inspect 
+the noise suppression package metadata instead of reading raw image bytes.","생 이미지 바이트를 직접 읽는 대신 DLC 디스크 이미지(dlc.img) 파일 시스템을 
+마운트하거나 파싱하여 노이즈 억제 패키지 메타데이터를 확인하세요.",X,노이즈 캔슬링 DLC 패키지(nc-ap-dlc)의 SquashFS 이미지인 dlc.img 파일 경로와 동일한 복사본을 식별함.,이미지의 첫 4KB가 0으로 채워져 있고 텍스트 전용 도구로는 파일 시스템을 파싱할 수 없는 데다 폴더 접근도 거절당해 작업을 중단함.
+,,,,,,,,,,,,
+,79,What is the ID of the URL with the most number of hits?,PARSING,"Chromium/Chrome Sync 또는
+ Web Data / History 데이터베이스 내 urls 테이블의 GUID/ID 항목","SQLite DB를 올바른 파서/쿼리로 조회하지 않고, 덤프 텍스트 파일을 상대로 오프셋 파이썬 파싱 스크립트를 작성하여 
+Raw 데이터 구조를 직접 추출하려고 함.  그 결과 정답 대상인 UUID 형태의 ID를 찾지 못하고 단순 Row ID만 추출하여 오답을 도출함.","SQLite DB를 제대로 쿼리/파싱하지 않고 Raw 바이너리 덤프 파이썬 스크립트에 의존하면서, 
+가장 조회수가 많은 URL의 실제 GUID/ID 필드(472a3434...)가 저장된 데이터베이스 테이블 구조를 올바르게 탐색하지 못함.",Enhanced Access,Query the SQLite database urls table properly to find the UUID string format ID for the most visited URL.,가장 방문 횟수가 많은 URL의 UUID 문자열 형식 ID를 찾기 위해  SQLite 데이터베이스의 urls 테이블을 정식으로 쿼리하세요.,O,Chrome Network Action Predictor DB에서 UUID 형식의 ID와 hits 컬럼을 가진 레코드를 조회해 takeout.google.com  항목을 식별함.,표준 SQL 쿼리 실행은 불가능했으나 원본 바이트에서 직접 파싱을 시도하여 hits가 2인 핵심 레코드를 찾아 정답을 도출함.
+,,,,,,,,,,,,
+,80,What is the name of the current champion of the sport Ruth was trying to learn?,REASONING,웹 방문 이력 아티팩트,"Ruth가 배우려던 종목(Speed walking / Racewalking) 탐색에는 성공했으나, 
+챔피언 기준을 2024 파리 올림픽 여성 20km 경보 금메달리스트 대신 세계선수권 챔피언으로 잘못 추론하여 오답을 선택함.","증거 파일 확인 및 종목 도출은 정상적으로 이루어졌으나, 외부 지식/챔피언 타이틀에 대한 대상 지정 추론 과정에서 오답 도출.",Oracle Evidence,Interpret 'current champion' as the reigning Olympic champion.,current champion'을 현 올림픽 챔피언으로 해석하세요.,O,"힌트를 적용해 Chrome 히스토리에서 Ruth가 배우려던 종목이
+ 경보(speed walking / race walking)임을 확인하고 2024 파리 올림픽 금메달리스트(Yang Jiayu 등)를 제시함.","Chrome 검색 기록(how to improve speed walking technique)에서 대상 스포츠를 
+정확히 특정하고, 웹 검색 없이 사전 지식으로 현역 올림픽 챔피언 이름을 도출함"
+,,,,,,,,,,,,
+,82,How many shirts are in the ad?,PARSING,"광고 이미지/웹 뷰 아티팩트
+ 또는 HTML/DOM 캐시 파일 내 광고 콘텐츠 항목","광고 데이터가 포함된 캐시/HTML/이미지 파일을 직접 렌더링하거나 올바른 파서를 통해 시각적/구조적 요소를 파싱하지 못하고,
+Raw 데이터(objectId: 39458) 덤프 추출을 시도하다 용량 초과(183,157자) 오류로 실패함.","광고 아티팩트에 포함된 요소를 올바르게 탐색·해석하지 못하고, 단순 전체 텍스트 덤프 방식의 접근으로 인해 파일 수집 및 분석에 실패함.",Enhanced Access,"Extract the ad image from the 7z archive, open it with an image viewer, and count the shirts.","	7z 압축 파일에서 광고 이미지를 추출해 이미지 뷰어로 열고 셔츠 수를 세세요.",X,"힌트에 따라 Marketing Advertisements.7z 내 TypeShirt_Ad.jpeg를 특정하고 암호 단서(Gmail, Trello, Discord)를 탐색함.","아카이브가 암호로 보호되어 있고 Autopsy MCP가 바이너리 파일을 텍스트로 반환하며 손상시키는 데다, 
+로컬 증거 폴더(Chromebook-20261010T104849Z-1-001) 접근 승인도 이루어지지 않아 이미지 추출 및 개수 확인에 실패함."
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,25ios,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,87,How many words typed were autocorrected?,PARSING,user_model_database.sqlite,"SQLite 데이터베이스 원본 파일이나 DB 파싱 도구를 사용하지 않고,
+WAL 바이너리 파일 오프셋 바이트를 Raw 텍스트로 직접 읽음",DB 파싱/SQL 쿼리 대신 WAL 바이너리를 직접 열람하여 정답(51) 추출에 실패함.,Enhanced Access,Parse the keyboard analytics SQLite database directly instead of reading raw WAL binary bytes.,"RAW WAL 바이너리 바이트를 직접 읽지 말고, 키보드 분석 SQLite 데이터베이스를 직접 파싱하여 쿼리하세요.",X,"RAW WAL 바이너리 바이트를 직접 읽지 말고 키보드 분석 SQLite 데이터베이스(user_model_database.sqlite)를
+직접 파싱하여 쿼리하라는 힌트를 적용함.",메인 DB(user_model_database.sqlite)의 과거 값(48)만 읽고 최신 변경분이 반영된 WAL 파일을 함께 파싱하지 않아 정답(51) 도출에 실패함.
+,,,,,,,,,,,,
+,89,What color hair does Ruth’s Bitmoji have?,PARSING,"Snapchat 캐시 디렉터리 내에 저장된
+Ruth의 Bitmoji 아바다 이미지 파일","Snapchat 앱 캐시 경로 내의 이미지 파일 목록 15개를 단순 조회(List)하는 검색 쿼리만 수행하고, 
+반환된 캐시 이미지들의 실제 이미지 데이터를 디스플레이하거나 파싱하여 머리 색상(blonde)을 시각적으로 추출/확인하지 않음.","캐시 경로에서 대상 Bitmoji 이미지 후보 파일들을 발견(Find)했으나, 해당 이미지 바이트를 실제로 열람하거나 
+시각적으로 분석하는 단계로 나아가지 않고 조회를 종료해 최종 답안 도출에 실패함.",Enhanced Access,Open each cached Bitmoji image in the Snapchat cache directory with an image viewer to read the hair color.,Snapchat 캐시 폴더의 Bitmoji 이미지를 하나씩 이미지 뷰어로 열어 머리 색을 확인하세요.,X,"힌트에 따라 Library/Caches/bitmojiNotif 폴더 내 PNG 이미지 파일(870a5b8a-..._bigquery, Object ID 107394)을 특정함.","Autopsy 서버가 파일 내용을 텍스트로만 반환해 이미지를 볼 수 없었으며, 원본 파일을 열기 위해 요청한 
+로컬 폴더(Downloads\00008110-0008196A2299401E_files_full-001) 접근 권한마저 거부되어 머리 색상 확인에 실패함"
+,,,,,,,,,,,,
+,91,What was the IP address logged from Discord?,EXTRACTION,iOS Apple Mail 내 Discord 로그인 알림 이메일,get_file_content로 원본 데이터 조회 중 출력 용량 초과 에러 발생,데이터는 존재하나 MCP 도구의 출력 제한으로 인해 결과 수집 실패,Enhanced Access,Slice the output or use grep to find the Discord email.,슬라이싱이나 grep으로 Discord 메일을 찾으세요,O,슬라이싱이나 grep을 사용해 iOS Apple Mail 내 Discord 메일을 찾으라는 힌트를 적용함.,출력 용량 제한을 우회해 iOS Mail 내 Discord 로그인 알림 메일(MessageData/12/full.emlx) 본문을 조회하여 IP 주소(184.171.159.153)를 추출함.
+,,,,,,,,,,,,
+,98,"Using format YYYY-MM, When was this device purchased?",PARSING,com.apple.NewDeviceOutreach.plist 내 구매/활성화 날짜 정보,"Binary Plist 파일을 텍스트 문자열로 직렬화하여 읽은 후, 
+타임스탬프 바이트/Double 값을 적절히 디코딩하지 못해 날짜 파싱 실패",증명 파일 도달에는 성공했으나 Binary Plist의 타임스탬프 구조 해석 및 디코딩 처리 부족,Enhanced Access,Decode the binary plist format (bplist) to extract the timestamp for DefaultDeviceActivationDate.,바이너리 plist(bplist)를 해석하여 DefaultDeviceActivationDate 항목의 타임스탬프를 디코딩하세요.,X,바이너리 plist(bplist)를 해석하여 DefaultDeviceActivationDate 항목의 타임스탬프를 디코딩하라는 힌트를 적용함.,"바이너리 바이트 손상으로 DefaultDeviceActivationDate 디코딩에 실패하고, 교차 추론한 연월(2024-06)도 실제 구매 시점과 달라 오답을 제출함."
+,,,,,,,,,,,,
+,101,What link redirects you to apply for a job?,DISCOVERY,"iOS Safari 방문 기록/북마크 DB, 
+메시지/이메일 또는 QR 코드 단축 URL 이력",케이스 데이터의 기본 개요 정보만 확인한 상태에서 분석 방향 및 검색 키워드를 특정하지 못하고 탐색 중단,"적절한 아티팩트(웹 브라우저 히스토리, 메시지 DB 등)로 진입하지 못하고 전체 데이터소스 통계만 조회함",Locator,Check the web browser history or shortened redirect URLs (e.g. delivr.com) in Safari artifacts,Safari 아티팩트 또는 웹 브라우저 히스토리에서 리다이렉트 단축 URL을 조회하세요.,X,"Safari 아티팩트 또는 웹 브라우저 히스토리에서 리다이렉트 단축 URL(예: delivr.com)을 조회하라는 힌트를 적용하여
+브라우저·캐시·메시지·메일 전반을 광범위하게 탐색함.","Safari 히스토리·캐시 전반을 조회했으나 delivr.com 단축 URL을 찾지 못했고, 삭제 레코드 카빙 및 이미지 열람 한계로 최종 링크를 도출하지 못함."
+,,,,,,,,,,,,
+,102,When was the last written record created?  (format YYYY-MM-DD HH:MM:SS),DISCOVERY,Apple Notes DB 내 손글씨/텍스트 필기 기록,타임라인 조회를 특정 시간대(17:55:00Z ~ 18:10:00Z)로 잘못 범위 지정하여 시스템 파일 수정 이력만 조회함,타임라인 조회 범위를 잘못 설정하여 실제 메모 작성 아티팩트(NoteStore.sqlite) 내부 레코드 검색에 실패함,Locator,Inspect the records inside Apple Notes database (NoteStore.sqlite) directly without restricting the time range.,시간 범위를 제한하지 말고 애플 메모 DB(NoteStore.sqlite) 내부 레코드를 직접 확인하세요.,X,시간 범위를 제한하지 말고 애플 메모 DB(NoteStore.sqlite) 내부 레코드를 직접 확인하라는 힌트를 적용함.,"NoteStore.sqlite와 WAL에서 최근 메모(2024-11-13)에는 접근했으나, 텍스트 변환 시 타임스탬프 바이트가 손상되어 정확한 초 단위 시각을 디코딩하지 못함."
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,25And,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,110,What degree does Mary have?,EXTRACTION,Mary의 이력서/자기소개서 문서 또는 관련 연락처·프로필 아티팩트,"get_file_content로 대상 파일의 원본 내용(196,573 자)을 가져오려 했으나 도구의 토큰/출력 제한에 의해 에러 발생",증명 파일은 찾았으나 도구의 용량 제한으로 내용을 읽지 못함,Enhanced Access,Use grep or python slicing to search for Mary's degree in the cached tool output file.,저장된 도구 출력 파일에서 grep이나 python 슬라이싱을 사용해 Mary의 학위 정보를 검색하세요.,X,"Mary의 이력서 PDF(marysresume.pdf) 및 Word 문서(Jones_Resume2024.docx) 아티팩트를
+타깃팅하여 학위 정보 검색에 적용함.","Mary의 이력서 파일(marysresume.pdf, Jones_Resume2024.docx)을 찾았으나
+압축 디코딩·바이너리 파싱 한계로 텍스트를 읽지 못하고 사용자에게 로컬 파일 접근을 요청하며 중단함."
+,,,,,,,,,,,,
+,111,What is the name of the structure seen in the picture taken at night?,PARSING,"야간에 촬영된 사진 파일(PXL_20241112_030013300.jpg)의
+ EXIF 위치 정보(GPS 좌표) 또는 이미지 시각 분석 데이터","이미지 파일의 원본 헤더/바이너리 데이터(bytesRead: 3000)를 
+텍스트 문자열 형태로 단순 로드하여 EXIF GPS 태그 및 이미지 내용을 해석하지 못함","파일 데이터 독출에는 성공했으나 바이너리 데이터를 텍스트로 읽어 
+사진의 촬영 위치/GPS 좌표 정보 추출 또는 이미지 분석을 진행하지 못함",Enhanced Access,Parse the EXIF metadata of the image to extract GPS coordinates and identify the location.,이미지의 EXIF 메타데이터를 파싱하여 GPS 좌표를 추출하고 위치를 확인하세요.,O,이미지 EXIF 메타데이터를 파싱하여 GPS 좌표를 추출하고 위치를 확인하는 힌트를 적용함.,야간 사진(PXL_20241112_030013300.jpg 등)의 EXIF GPS 좌표를 파싱하고 위치 정보를 교차 검증해 구조물 이름(Moran FRAME)을 정확히 도출함.
+,,,,,,,,,,,,
+,112,What language was the nature website in?,DISCOVERY,"Chrome/Samsung Internet 브라우저의 
+탭 세션 데이터베이스 또는 히스토리 DB","단일 탭 세션 파일(tab21)의 바이너리 내용을 로드했으나, 
+해당 파일 내 Google 안드로이드 도움말 URL만 확인하고 실제 문제와 관련된 웹사이트 탭/히스토리 레코드를 찾지 못함","대상 브라우저 아티팩트 검색 범위를 잘못 선택하여 
+자연 관련 독일어 웹사이트 레코드가 포함된 탭/히스토리 데이터를 탐색하지 못함",Locator,"The URL is in the browser history database, in its URL table.",URL은 브라우저 방문 기록 데이터베이스의 URL 테이블에 있습니다.,X,"힌트(""URL이 브라우저 히스토리 데이터베이스의 URL 테이블에 있다"")를 따라 Chrome History DB의 urls 테이블과 삭제된 공간,
+Google Takeout History.json 및 타 브라우저 설치 여부를 전수 조회함.",해당 안드로이드 케이스(25_Android) 내 브라우저 기록 전반에 자연(nature) 관련 웹사이트 URL이 전혀 존재하지 않아 언어를 판별할 수 없었음.
+,,,,,,,,,,,,
+,113,"What singer appeared in a TikTok video watched 
+on 2024-11-15 at 1:01:26 AM UTC?",EXTRACTION,"TikTok 데이터베이스/캐시 아티팩트 내 
+비디오 시청 기록 및 가수(Teddy Swims) 정보","get_file_content로 대상 파일 내용(114,432 자)을 읽어오려 했으나 도구 용량 제한(maxBytes: 100000) 초과로 에러 발생",증명 파일 도달에는 성공했으나 도구의 출력 용량 제한으로 인해 시청 이력 데이터를 읽지 못함,Enhanced Access,Use grep or python slicing to find the TikTok video watched at 1:01:26 AM UTC in the saved tool output.,저장된 도구 출력 파일에서 grep이나 python 슬라이싱을 사용해 UTC 1:01:26에 시청한 TikTok 비디오 정보를 검색하세요.,X,"저장된 도구 출력이나 시청 기록 데이터에서 grep 또는 python 슬라이싱을 사용하여
+UTC 1:01:26 시청 TikTok 비디오 정보를 검색하라는 힌트를 적용함.","aweme_record-wal에서 시청한 TikTok 비디오 ID(7424040283626687786)는 추출했으나,
+도구 출력 제한 및 외부 네트워크 차단 한계로 가수(Teddy Swims) 정보를 확정하지 못함."
+,,,,,,,,,,,,
+,116,"How many spam numbers were created 
+on 2024-11-27 at 02:42:52.972 UTC?",EXTRACTION,"스팸 번호 DB/기록 파일 내 2024-11-27 
+02:42:52.972 UTC 생성 타임스탬프 관련 레코드","get_file_content로 파일 내용(1,641,617 자)을 오프셋 기반 로드 시도 중 토큰/출력 제한 초과 에러 발생",증명 파일 접근 성공했으나 도구의 출력 용량 제한으로 인해 데이터 읽기 실패,Enhanced Access,Use grep or python slicing to count the spam numbers created at 2024-11-27 02:42:52.972 UTC in the output file.,저장된 출력 파일에서 grep이나 python 슬라이싱으로 2024-11-27 02:42:52.972 UTC에 생성된 스팸 번호 개수를 집계하세요.,X,"저장된 도구 출력 파일에서 grep이나 python 슬라이싱을 사용하여 2024-11-27 02:42:52.972 UTC
+타임스탬프 관련 스팸 번호 개수를 카운팅하라는 힌트를 적용함.","스팸 DB(normalized_spam.db)에서 해당 타임스탬프 블록(274개)을 찾았으나,
+바이너리 텍스트 변환 시 바이트 손상으로 정확한 개수를 확정하지 못하고 수동 SQL 쿼리를 요청하며 중단함."
+,,,,,,,,,,,,
+,117,What's the numerical rating for the app with the most installs?,EXTRACTION,앱 스토어/설치 앱 DB 내 최다 설치 수 앱의 평점 정보,"get_file_content로 파일 내용(608,686 자)을 오프셋 기반 로드 시도 중 토큰/출력 제한 초과 에러 발생",증명 파일 접근 성공했으나 도구의 출력 용량 제한으로 인해 데이터 읽기 실패,Enhanced Access,Use python slicing or SQLite/grep to find the rating of the app with the most installs in the saved output.,저장된 출력 파일에서 python 슬라이싱이나 DB 조회를 사용해 최다 설치 앱의 평점을 추출하세요.,O,저장된 도구 출력 파일에서 Python 슬라이싱이나 DB 조회를 사용하여 최다 설치 앱의 평점을 추출하라는 힌트를 적용함.,"Play Store 캐시 DB(streamdatastore.db)에서 최다 설치 앱(Facebook, 100억+ 다운로드)의 레코드를 슬라이싱 조회해 평점(4.5)을 정확히 추출함."
+,,,,,,,,,,,,
+,118,"What is the hex code for the Profile Picture 
+with the number (802) 495-9063?",EXTRACTION,"프로필 사진 및 전화번호 (802) 495-9063 관련 
+연락처/메시지 데이터베이스 또는 아티팩트 내 헥사 코드(#ee675c)","get_file_content로 파일 내용(145,408 자)을 읽어오려 했으나 도구 용량 제한(maxBytes: 30000) 초과로 에러 발생",증명 파일 도달에는 성공했으나 도구의 출력 용량 제한으로 인해 프로필 사진 헥사 코드 데이터를 읽지 못함,Enhanced Access,Use grep or python slicing to find the hex code associated with phone number (802) 495-9063 in the saved output.,"저장된 출력 파일에서 grep이나 python 슬라이싱을 사용해 
+전화번호 (802) 495-9063에 해당하는 프로필 사진의 헥사 코드를 검색하세요.",X,"저장된 도구 출력 파일에서 grep이나 python 슬라이싱을 사용하여 전화번호 (802) 495-9063에
+해당하는 프로필 사진의 헥사 코드를 검색하라는 힌트를 적용함.","Google Messages DB 및 캐시에서 수신 시각과 일치하는 아바타 해시 파일은 식별했으나,
+간접 매칭에 그쳐 정확한 프로필 배경 색상 헥사 코드(#ee675c)를 독출하지 못함."
+,,,,,,,,,,,,

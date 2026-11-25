@@ -1,0 +1,131 @@
+﻿,26and,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,2,"What was the last time in UTC Clash Of Clans was closed?
+(Format: YYYY-MM-DD HH:MM:SS)",DISCOVERY,Samsung Digital Wellbeing DB (\data\data\com.samsung.android.forest\databases\dwbCommon.db),"ALEAPP HTML 리포트의 일반 앱 목록 또는 메인 대시보드 화면만 조회하고, 
+Samsung Digital Wellbeing 전용 이벤트 테이블이나 관련 SQLite 데이터베이스 경로를 직접 탐색하지 못함","앱 사용 기록 및 실행/종료 타임스탬프를 담고 있는 삼성 디지털 웰빙 아티팩트 
+테이블이나 해당 DB 파일 내 수집 범위를 누락하여 앱 종료 시각을 찾지 못함",Locator,Check the Samsung Digital Wellbeing database for app event logs.,삼성 디지털 웰빙 데이터베이스에서 앱 이벤트 로그를 확인하세요.,X,"Samsung Digital Wellbeing 경로(/data/data/com.samsung.android.forest/databases/)
+ 내의 dwbCommon.db 및 -wal 파일의 위치와 존재 여부를 정확히 식별함.","MCP 파일 리더 도구의 바이너리 텍스트 손상(? 치환) 문제로 SQLite 내부 타임스탬프 파싱이 불가능해진 데다 
+로컬 폴더 접근 권한까지 거부되면서 데이터베이스 쿼리를 실행하지 못해 정답 도출에 실패함."
+,,,,,,,,,,,,
+,4,What is the Ingress rating of the security camera that supports night vision?,DISCOVERY,\data\data\com.android.chrome\app_chrome\Default\History,"타임스탬프나 앱 사용 내역 관련 아티팩트만 주로 탐색하고, 
+제품 스펙(Ingress rating 등)이 포함된 외부 웹 캐시 데이터나 제품 상세 정보 항목을 누락함","야간 투시 기능을 지원하는 보안 카메라의 세부 사양 페이지 및
+ 방진·방수 등급 정보를 담고 있는 데이터 영역을 올바르게 탐색하지 못함",Locator,"Look into the browser cache or web API logs 
+for the security camera product specifications (cctvsecuritypros.com)",웹 캐시나 브라우저 로그에서 보안 카메라 제품 사양 정보를 확인하세요.,X,"힌트에 제시된 cctvsecuritypros.com의 브라우저 히스토리, 캐시 및 웹 API 로그를 탐색하여 
+야간 투시 기능이 언급된 특정 제품 페이지(""2MP HD Vandalproof Dome Camera"")와 관련 이미지 파일(SV-ED2-N...png)을 정확히 식별함.","본문 HTML 페이지 자체는 캐싱되지 않았고 압축된 캐시 파일 역시 텍스트 변환만 지원하는
+ Autopsy MCP 파일 리더의 한계로 압축 해제 및 바이너리 검색이 불가능해 제품 사양(Ingress rating) 추출에 실패함."
+,,,,,,,,,,,,
+,5,What was the answer to the first Wordle puzzle solved?,REASONING,Wordle 게임 관련 데이터 또는 웹 브라우저 캐시 내 단어 기록,"일반적인 Wordle의 첫 번째 공식 퍼즐 정답(CIGAR)을 상식 기반으로 답변하여, 
+실제 디지털 포렌식 이미지 내 사용자 기기 기록에 남아 있는 첫 번째 풀이 단어와 불일치함","기기 내 저장된 실제 사용자 활동 로그나 게임 데이터베이스를 분석해 
+정답을 유추하지 못하고 일반 상식 정보로 답변함",Oracle Evidence,Compare the order of the games recorded in the user's own Wordle data.,사용자 기기에 기록된 Wordle 데이터의 게임 순서를 비교하세요.,O,"힌트를 반영하여 NYT Games 앱의 분석 DB(event-buffer.db)와 로컬 스토리지(.ldb)에서 
+두 게임의 순서를 비교해 11월 28일 게임(#1623)이 첫 번째 게임임을 확인함.","일부 압축된 .ldb 파일의 바이트가 손상되었음에도 분석 DB(event-buffer.db)에 평문으로 남은
+ solve-attempt 이벤트(1-acorn부터 6-colic)와 100%-complete 로그를 교차 검증하여 정답(COLIC)을 정확히 도출함."
+,,,,,,,,,,,,
+,6,What is the name of the client the user was most recently working on?,DISCOVERY,클라이언트 작업 파일 또는 관련 앱/문서 데이터,"SMS, 이메일, 브라우저 검색 기록 및 ""client"" 또는 ""camera"" 키워드가 포함된 파일 이름 위주로만 탐색을 시도하였으며,
+ Autopsy 연결 오류 등으로 인해 최근 열어본 파일 목록(LNK/Jump Lists 등)이나 외부 클라우드/채팅 앱 데이터베이스 내역을 확인하지 못함","사용자가 최근 작업 중이던 클라이언트 프로젝트 파일 및 관련 문서 아티팩트가 저장된 
+올바른 애플리케이션 저장소나 최근 사용 기록 영역을 탐색 범위에 포함하지 못함",Locator,"Check recent files, cloud storage databases, or note/chat app records 
+instead of general messages and basic file name filters.","일반 메시지나 기본 파일 이름 필터 대신 최근 파일, 클라우드 저장소 데이터베이스 또는 메모/채팅 앱 기록을 확인하세요.",O,"일반 메시지나 단순 파일명 필터링 대신 클라우드 저장소 데이터베이스를 확인하라는 
+힌트에 따라 Google Docs 오프라인 캐시 데이터베이스(cello.db-wal) 경로를 정확히 탐색함.","Clients 하위 폴더 내 클라이언트별 버전 타임스탬프(Astronautica의 2025-12-01 대비 Hidden Gems의 2025-12-11)와 
+문서 수정·동기화 이력(""CLIENT Security Recommendations"" 300회 이상 참조)을 대조해 가장 최근 작업 클라이언트인 Hidden Gems를 정확히 도출함."
+,,,,,,,,,,,,
+,12,What was the PID of the app that was in focus at 2025-12-15 17:48:09?,PARSING,포커스된 앱의 PID(5254) 정보가 기록된 시스템 로그 또는 프로세스 상태 아티팩트,"procexitinfo 파일을 부분적으로 로드하였으나 데이터가 잘리거나(truncated: true) 
+특정 타임스탬프(2025-12-15 17:48:09)에 해당하는 프로세스 ID 및 포커스 상태를 정확히 파싱하여 매칭하지 못함","바이트 제한으로 인해 로그의 전체 내용을 확인하지 못하거나, 
+정확한 타임스탬프와 프로세스 ID 간의 연관 관계를 추적하는 파싱/탐색 단계를 완수하지 못함",Enhanced Access,Decode the binary procexitinfo records around 17:48:09 and read the PID field of each record.,17:48:09 전후의 procexitinfo 레코드를 해독해 각 레코드의 PID 필드를 읽으세요.,X,힌트에 따라 /data/system/procexitstore/procexitinfo 파일을 특정하여 디코딩을 시도함,"Autopsy 리더가 바이너리 파일을 텍스트로 변환하면서 0x7F 초과 바이트를 ?로 손상시켜 PID와 타임스탬프가 깨졌고, 
+원본 바이트를 읽기 위한 로컬 procexitstore 폴더 접근 권한 요청마저 거부되어 최종 도출에 실패함."
+,,,,,,,,,,,,
+,13,When in UTC was the timezone set? (YYYY-MM-DD HH:MM:SS),DISCOVERY,시스템 설정 데이터베이스 또는 타임존 변경 로그 파일,"단순히 ""zone"" 키워드가 포함된 파일 이름 위주로만 검색(TimeZoneStore.pb, ARZone.art 등)하여 
+타임존 설정이 실제로 기록된 시계 패키지 설정 파일(.xml)의 내부 데이터나 타임스탬프를 정밀하게 분석하지 못함","타임존이 변경되거나 설정된 시점이 기록된 정확한 설정 파일(.xml) 내역을 
+확인하거나 타임스탬프를 매칭하는 탐색 과정을 완수하지 못함",Locator,"Check clock package shared preferences or system setting configuration files 
+(e.g., DB_SET_TIMEZONE.xml) rather than generic zone-named files to find the exact timezone setting timestamp.",정확한 타임존 설정 타임스탬프를 찾으려면 일반적인 zone 이름의 파일 대신 시계 패키지 설정 파일이나 시스템 설정 구성 파일을 확인하세요.,X,"힌트에 명시된 시계 패키지 공유 환경설정 파일
+(com.sec.android.app.clockpackage/shared_prefs/DB_SET_TIMEZONE.xml) 경로를 정확히 찾아 내부 설정값을 확인함.","XML 내부 값은 타임스탬프가 아닌 오프셋(-18,000,000ms)임을 파악하고 세 경로 
+복사본의 최종 수정 시각과 초기 기기 설정 시간대를 교차 검증하여 2025-11-10 18:11:14를 정확히 도출함."
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,26ios,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,15,What Instagram handle does User ID 2278169415 belong to?,DISCOVERY,...\user_bootstrap\shared_bootstraps.plist 와 ...\Library\Preferences\com.burbn.instagram.plist,"Instagram 사용자 ID 2278169415에 해당하는 핸들을 찾기 위해 올바른 아티팩트나 
+설정 파일을 탐색하지 못하고 로그상 조회 범위를 놓쳤거나 잘못된 데이터베이스/경로를 참조함.","인스타그램 관련 plist 파일(com.burbn.instagram.plist 등)이나 
+AXIOM의 Instagram 프로필 섹션을 정확히 타겟팅하여 탐색하지 못함.",Locator,Look into the Instagram preference plist or Axiom's Instagram profile section for User IDs.,인스타그램 preference plist 파일이나 AXIOM의 Instagram 프로필 섹션에서 User ID를 조회해 보세요.,O,"힌트가 지목한 Instagram preference plist 파일(com.burbn.instagram.plist 등)을 
+먼저 확인하여 해당 ID가 없음을 검증한 뒤 Instagram 랭킹 캐시 경로로 탐색 범위를 확장함.","ig-ranking-data-ig-ranking-entity-ids-to-entities-and-additional-user-info.plist 파일 내부의 
+사용자 객체 정보를 파싱해 User ID 2278169415에 매칭되는 핸들 mrbeast를 정확히 도출함."
+,,,,,,,,,,,,
+,17,In UTC when was the last iCloud backup? (YYYY-MM-DD HH:MM:SS),PARSING,\private\var\mobile\Library\Preferences\com.apple.mobile.ldbackup.plist,"com.apple.MobileBackup.plist 파일을 읽었으나 
+타임스탬프의 오프셋 및 UTC 변환을 제대로 처리하지 못함",-05:00 등 타임스탬프 오프셋 및 UTC 환산 계산을 올바르게 파싱하지 못함,Enhanced Access,Parse the backup timestamps in com.apple.MobileBackup.plist and correctly convert them to UTC.,com.apple.MobileBackup.plist 파일의 백업 타임스탬프를 파싱하여 UTC 기준으로 올바르게 환산해 보세요.,X,"힌트가 지목한 com.apple.MobileBackup.plist 파일의 BackupStateInfo 섹션을 찾아 
+Apple 타임스탬프를 역산하고 텍스트 백업 로그의 오프셋까지 교차 검증하여 UTC 시간 범위를 좁힘.","텍스트 변환만 지원하는 Autopsy 파일 리더가 0x7F 이상의 바이트를 손상시켜 
+8바이트 타임스탬프 중 3바이트가 유실되었고 로컬 폴더 접근 권한마저 거부되면서 정확한 초 단위 시각을 특정하지 못함."
+,,,,,,,,,,,,
+,18,"What was the farthest distance the user logged in meters?
+(Round to the nearest hundredth)",DISCOVERY,Apple Health DB \private\var\mobile\Library\Health\healthdb_secure.sqlite,"iLEAPP HTML 리포트 메인 페이지만 로드하고, Apple Health 데이터가 포함된 
+특정 데이터베이스나 관련 아티팩트 경로(healthdb_secure.sqlite)를 탐색하지 못함.",Apple Health 관련 아티팩트 및 데이터베이스 경로를 정확히 식별하여 탐색하는 데 실패함.,Locator,The data is in healthdb_secure.sqlite and its -wal file.,데이터는 healthdb_secure.sqlite와 -wal 파일에 있습니다.,X,힌트)에 따라 케이스 내에서 해당 SQLite 및 WAL 파일을 정확히 찾아냄.,"Autopsy MCP 서버가 바이너리 파일을 손실 텍스트로 반환해 거리 수치 바이트를 ?로 훼손시켰고, 
+원본 DB를 직접 쿼리하기 위해 요청한 로컬 Health 폴더 접근 권한마저 거부되어 최종 도출에 실패함."
+,,,,,,,,,,,,
+,19,How many people did the user message expressing concern about Daniel?,EXTRACTION,iPhone sms.db,"sms.db 파일의 바이너리/콘텐츠를 조회하였으나, 전체 데이터가 길어 
+주요 대화 내용 및 수신/발신자 식별에 필요한 쿼리(SQL 조회 등)를 누락하거나 아티팩트 파싱을 끝까지 수행하지 못함.","데이터베이스 내부의 메시지 테이블 및 연락처 정보를 조인하여 Daniel에 대한 우려가 담긴 
+메시지 건수와 상대방 인원수를 정확하게 필터링·집계하는 탐색/파싱 과정의 누락.",Enhanced Access,"Query the chat/message table in sms.db by joining handle and message text
+ to count unique contacts where the user expressed concern about Daniel.",sms.db에서 메시지 내용 중 Daniel에 대한 우려가 포함된 발화와 상대방 핸들 정보를 조인하여 대화 상대방 인원수를 다시 조회해 보세요.,X,"힌트가 지목한 sms.db 및 -wal 파일을 먼저 조회하여 개인 간 대화 내역이 없음을 확인한 뒤 
+Zangi, Instagram DM, X/Twitter 캐시, Session 등 다른 메신저 아티팩트까지 전수 탐색함.","실제 대화가 저장된 것으로 추정되는 Signal 데이터베이스(signal.sqlite)가 SQLCipher로 암호화되어 있고 
+iOS 키체인 복호화 키 접근 권한이 없어 관련 메시지 발송 대상 인원을 추출하지 못함."
+,,,,,,,,,,,,
+,20,What genre of app did the user download the most of?,EXTRACTION,App Store 구매 내역 또는 설치된 앱들의 메타데이터/카테고리 정보,"단말에 설치된 앱 목록(TSK_INSTALLED_PROG)을 조회하여 번들 ID와 경로를 나열했으나, 
+각 앱의 스토어 카테고리(Genre) 정보를 조회하거나 분류하는 추가 도구/분석을 수행하지 못함.","앱 목록(TSK_INSTALLED_PROG) 데이터만으로는 각 앱의 App Store 장르를 
+직접 파악할 수 없음에도, 외부 메타데이터나 관련 데이터베이스 파일을 탐색하는 도구 호출을 누락함.",Enhanced Access,Decode each app's iTunesMetadata.plist and read its genre field.,각 앱의 iTunesMetadata.plist를 해독해 genre 필드를 읽으세요.,O,힌트에 따라 /private/var/containers/Bundle/Application/ 경로 내 설치된 17개 앱의 plist 파일에서 장르 정보를 추출함.,"16개의 XML plist와 1개의 바이너리 plist를 정상적으로 파싱하고 중복/파생 레코드를 
+배제하여 가장 많이 다운로드된 장르(Social Networking, 7개)를 정확히 도출함."
+,,,,,,,,,,,,
+,22,"What airport was the phone near when it pinged off of a cell tower on
+2025-12-16 22:47:24 (UTC)?",DISCOVERY,"iOS 위치 캐시 데이터베이스 
+(cache_encryptedB.db, cache_encryptedC.db 등 locationd 디렉토리 내의 셀 타워 / 위치 기록 아티팩트)","cache_encrypted 관련 파일들을 검색하는 데 그쳤으며, 해당 위치 데이터베이스 내부에 기록된 
+셀 타워(Cell Tower) 연결 로그나 위경도 좌표 정보를 특정 시간대(2025-12-16 22:47:24 UTC) 기준으로 조회·추출하지 못함.","locationd 캐시 DB 내부의 셀타워 및 위치 기록 테이블에서 지정된 타임스탬프에 일치하는 기록을 파싱하고, 
+해당 좌표와 인접한 공항(Long Island MacArthur Airport)을 매핑하는 과정의 누락.",Locator,The records are in the locationd cache_encrypted databases.,기록은 locationd cache_encrypted 데이터베이스에 있습니다.,X,"힌트를 바탕으로 /private/var/root/Library/Caches/locationd/ 내 cache_encryptedB.db, cache_encryptedC.db 및 각 -wal 파일을 특정함.","Autopsy MCP 서버가 바이너리 숫자로 저장된 타임스탬프와 위·경도 바이트를 ?로 손상시켜 해당 시각의 셀 타워 좌표를 읽지 못했고, 
+원본 파일을 읽기 위한 로컬 locationd 폴더 접근도 승인되지 않아 공항을 특정하지 못함."
+,,,,,,,,,,,,
+,25,What is the mascot of the frozen dessert shop that the user visits a lot?,EXTRACTION,사용자 위치 또는 방문 기록,"파일 조회(get_file_content) 시 결과 내용이 너무 커서 텍스트 토큰 제한(트렁케이션)에 걸렸으며, 
+분할 읽기나 내부 JSON/텍스트 파싱을 올바르게 수행하지 못해 매장 마스코트 정보를 확인하지 못함.","거대한 파일 크기로 인해 발생한 툴 출력 잘림 현상을 적절한 
+청크 단위 분할 또는 jq / Python 슬라이싱을 통해 완전히 파싱하고 추적하는 과정의 누락.",Enhanced Access,"Read the large content of objectId 134612 in chunks or 
+use Python/jq slicing to parse the visited dessert shop details and identify its mascot.","objectId 134612의 대용량 파일 내용을 파이썬 슬라이싱이나 청크 단위로 나누어 상세히 읽고, 
+자주 방문한 디저트 가게의 마스코트 정보를 확인해 보세요.",X,"힌트가 지목한 objectId 134612(PDPlaceCache.db-wal) 전체 데이터를 Python으로 파싱하여 
+방문한 디저트 가게 이름(Shy Guy Gelato), 주소, 웹사이트(shyguygelato.com) 및 캐시된 리뷰 내용을 추출함.","추출된 케이스 데이터 내부 텍스트에는 마스코트 언급이 없었으며 
+인터넷 접속 제한으로 외부 링크나 공식 웹사이트(shyguygelato.com)를 조회하지 못해 마스코트를 식별하는 데 실패함."
+,,,,,,,,,,,,
+,28,"What word did the user misspell, then correct before sending over text on a Friday?
+(Format: type the misspelled word as-is)",DISCOVERY,"sms.db
+ (iOS 메시지 데이터베이스 내 채팅 테이블 및 메시지 아티팩트 조회를 통한 사용자 입력 내용 및 오탈자 수정 이력 확인)","sms.db 파일 객체(objectId: 138992)를 전체 덤프 형태로 읽어오는 방식에 집중하거나, 
+단어 수정(편집) 로그나 관련 메시지 레코드를 정확하게 특정하여 필터링하지 못함.","데이터베이스 전체 구조 내에서 문자 메시지 수정(edit) 관련 메타데이터나 텍스트 기록을 
+정밀하게 탐색(Discovery)하지 못해 정답 단어(sipposed)를 찾지 못함.",Locator,The edit history is in sms.db and its -wal file.,수정 이력은 sms.db와 -wal 파일에 있습니다.,X,"힌트를 따라 sms.db 및 -wal 파일에서 텍스트 블롭, message_summary_info 컬럼, 여유 공간(free space)까지 전수 조사함.","조사 결과 sms.db와 -wal에는 자동 발송된 13건의 SMS와 1건의 수신 거부 답장만 존재하고 
+수정 이력이나 금요일 발송 메시지가 전혀 발견되지 않아 오타 단어를 찾지 못함."
+,,,,,,,,,,,,
+,29,What is the UUID of the process that is related to an initiated shutdown?,REASONING,shutdown.log (시스템 종료 관련 로그 아티팩트 내에서 시스템 종료를 개시하거나 연관된 프로세스의 올바른 UUID 식별),"shutdown.log 파일의 로그 내용을 성공적으로 조회하였으나, 단순히 나열된 remaining client pid 목록이나 
+커널관련 로그 속 UUID를 정답(7FF3F4981CB5B10251CC57580B9C)과 잘못 매칭하거나 식별 논리에서 오류를 범함.","로그 내 다수의 프로세스 및 커널 UUID 중에서 '시스템 종료 개시(initiated shutdown)'와 
+직결된 정확한 프로세스 항목을 선별하는 추론(Reasoning) 과정의 오류.",Oracle Evidence,"Re-examine the process UUIDs in shutdown.log associated with 
+the initiated shutdown event rather than background daemons.",shutdown.log 내 백그라운드 데몬이 아닌 시스템 종료 개시 이벤트와 연관된 프로세스 UUID를 다시 확인하세요.,O,"힌트가 지목한 shutdown.log 전체(7,746 바이트)를 파싱해 5차례의 종료 이벤트별
+실행 프로세스를 비교하고 백그라운드 데몬이 아닌 의도적 종료 유발 프로세스를 선별함.","2025-12-22 15:42:56 UTC 종료 기록에만 유일하게 등장하며 외부 기기(USB 등) 연결을 제어하는 
+비정상 고번호 PID 프로세스(remoted, PID 1925)의 UUID 5AB9FEDB-537F-37F0-85FE-01D07D00A86F를 정확히 도출함."
+,,,,,,,,,,,,
+,30,"How much time elapsed between Tom reading a phone number and sending
+their first message on a different platform? (Format: HH:MM:SS.sss)",EXTRACTION,통화/연락처 기록 또는 브라우저/메신저 아티팩트 ,"sms.db 또는 특정 대용량 파일 객체(objectId: 138994)를 가져오는 과정에서 토큰/크기 한도를 초과하여 에러가 발생하였고, 
+파일을 온전히 읽어오거나 적절한 도구(쿼리, 필터링 등)로 전환하지 못한 채 도구 실행에 실패함.","대용량 결과 처리에 실패하거나 적절한 파싱 도구를 사용하지 못해 
+시간 계산에 필요한 데이터를 아예 수집하지 못한 도구(Tool) 활용 제약.",Enhanced Access,"Use targeted queries or smaller chunk reads to extract timestamps 
+from both the phone lookup and the alternative platform message logs.",전화번호 조회 기록과 타 플랫폼 메시지 로그에서 각각 타임스탬프를 추출하기 위해 타겟팅된 쿼리나 분할 조회를 사용하세요.,X,"X DM 읽음 시각과 Signal 알림 로그(SignalNSE log) 수신 시각을 대조함. 힌트가 안내한 타겟 쿼리 및 
+분할 읽기 전략을 활용해 다른 플랫폼(Zangi)의 첫 메시지 발송 밀리초 타임스탬프(2025-12-12 17:09:15.925 UTC)를 정확히 추출함.","텍스트 변환만 지원하는 케이스 파일 리더가 X(Twitter) DM 캐시의 압축 해제 및 
+PDPlaceCache 내 바이너리 타임스탬프를 손상시켜 전화번호 조회 시각을 추출하지 못해 경과 시간 계산에 실패함."
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+,26mac,,,,,,,,,,,
+,문제 번호,질문,오답 유형 라벨,대상 아티팩트,에이전트 수행 행위,오답 원인,힌트 유형,힌트 프롬프트(EN),힌트 프롬프트(KR),소요 시간/성공 여부,힌트 활용 내용,실패/성공 원인
+,33,What was the lowest battery level the device reached?,EXTRACTION,/private/var/db/powerlog/Library/BatteryLife/CurrentPowerlog.PLSQL,대상 파일은 정확히 지목했으나 SQLite 쿼리가 불가능하여 로그 샘플 1건만 확인하고 탐색 중단함.,대상 DB는 확인했으나 배터리 레벨 전체를 정렬/비교할 쿼리 수단이 없었음.,Enhanced Access,Query the battery-level table in the power database with SQL and sort the rows by timestamp.,전원 데이터베이스의 배터리 레벨 테이블을 SQL로 조회하고 시간순으로 정렬하세요.,X,힌트에 맞춰 /private/var/db/powerlog/Library/BatteryLife/CurrentPowerlog.PLSQL과 -wal 파일 및 일별 아카이브를 특정함.,"Autopsy MCP 서버에 SQL 실행 기능이 없고 바이너리 읽기 시 바이트가 ?로 손상되는 데다, 
+로컬 Downloads 경로에 원본 케이스 파일(MacBookPro-20251225-205024-files)이 없어 쿼리 실행에 실패함."
+,,,,,,,,,,,,
+,36,What is the IMEI of the connected iPhone?,DISCOVERY,\Users\alexmaurie\Library\Application Support\com.apple.akd\devicelist.db의 device_list 테이블 additional_info,"USB 연결, 백업, 페어링 등만 확인 후 iPhone 기록이 없다고 결론냄.
+계정 연결 기기 DB는 확인 안 함.","""connected""를 물리적 연결로만 해석하여 계정에 묶인 기기 목록 DB를 탐색하지 못함.",Locator,Look for account-linked devices in the Mac's records.,Mac 기록에서 계정에 연결된 기기를 찾을 것.,O,계정 연동 기기 기록 힌트를 받아 Mac의 devicelist.db를 확인함.,devicelist.db 내 device_list 테이블의 JSON 필드에서 IMEI(351906515098518)를 도출해 정답과 완벽히 일치함.
+,,,,,,,,,,,,
+,43,What was the logical size of the second most recent backup?,PARSING,\Volumes\.timemachine\3607D748-7F65-4AB0-A842-1D9C98C1D72D\ 아래 가장 최근 백업의 backup_manifest.plist 이력,백업 이력은 정확히 파악했으나 바이너리 plist 변환 손상으로 logicalSize를 읽지 못해 중단함.,증거 탐색은 성공했으나 바이너리 plist의 숫자 필드를 파싱할 수단이 없었음.,Enhanced Access,Parse structured backup manifest property lists directly.,백업 매니페스트 plist를 구조화된 방식으로 파싱할 것.,X,백업 매니페스트 plist 힌트에 따라 두 번째 최신 타임머신 백업의 backup_manifest.plist를 추적함.,"Autopsy 텍스트 변환 중 바이트 1개가 ??로 손상되어 정확한 크기를 제시하지 못하고 
+범위만 출력하여 정답(7506837257 OR 9251250272)을 맞히지 못함."
+,,,,,,,,,,,,
+,44,What was the value associated with the most recent iCloud operation?,DISCOVERY,"Users\alexmaurie\Library\Caches\com.apple.CloudTelemetry\XPCService\com.apple.cloudd\eventcache\cache.db의 
+clientid 테이블, “Operation” 이벤트의 value 컬럼",이름에 operation이 포함된 키체인 로그의 마지막 recordId를 확정 답안으로 제시함.,"파일명에 ""operation""이 들어간 로그만 단순 매칭하여 실제 이벤트 캐시 DB를 탐색하지 못함.",Locator,The operation records are in the iCloud CloudTelemetry cache.db database.,작업 기록은 iCloud CloudTelemetry cache.db 데이터베이스에 있습니다.,X,힌트에 따라 Autopsy MCP를 통해 CloudTelemetry cache.db 파일 검색을 시도함.,Autopsy MCP 서버의 파일 검색 요청이 30초 초과(타임아웃)로 두 차례 연달아 실패하여 파일 위치 및 내부 값을 전혀 조회하지 못함.
+,,,,,,,,,,,,
+,47,"At what time (UTC 24hr time, format HH:MM)
+did the user join the network of a cafe on the first day of the month?",DISCOVERY,"Biome \Users\alexmaurie\Library\Biome\streams\restricted\Device.Wireless.WiFi\local\785865828566727 (SEGB),
+AppInFocus Biome의 CaptiveNetworkAssistant 포커스로 교차 확인",저장된 네트워크 목록만 조회해 1일 접속 기록 없음으로 잘못 결론 내림.,최신 상태만 담은 스냅샷 파일만 확인하여 개별 접속 이벤트 스트림(Biome)을 탐색하지 못함.,Locator,Look for event streams logging individual Wi-Fi connections.,개별 Wi-Fi 연결 타임스탬프가 기록된 이벤트 스트림을 찾을 것.,O,Wi-Fi 연결 이벤트 스트림(_DKEvent.Wifi.Connection) 및 Captive Network 로그를 추적함.,"연결 타임스탬프 일부 바이트 손상에도 불구하고 주변 부팅 및 
+앱 네트워크 활성화 시점을 분석해 20:45를 최선의 정답으로 도출해 정답(20:45)과 정확히 일치함."
+,,,,,,,,,,,,
