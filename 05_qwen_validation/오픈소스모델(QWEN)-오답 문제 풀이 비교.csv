@@ -1,0 +1,63 @@
+문제 번호,질문,성공 여부,비고
+2,"What was the last time in UTC Clash Of Clans was closed? 
+(Format: YYYY-MM-DD HH:MM:SS)","X - 컨텍스트 초과
+",
+4,What is the Ingress rating of the security camera that supports night vision?,X - 컨텍스트 초과,
+6,What is the name of the client the user was most recently working on?,X - 도구 호출 한도 초과,
+12,What was the PID of the app that was in focus at 2025-12-15 17:48:09?,X - 컨텍스트 초과,
+13,When in UTC was the timezone set? (YYYY-MM-DD HH:MM:SS),X - 컨텍스트 초과,
+15,What Instagram handle does User ID 2278169415 belong to?,X  - 도구 호출 한도 초과,
+18,"What was the farthest distance the user logged in meters? 
+(Round to the nearest hundredth)","X - 컨텍스트 초과
+",
+19,How many people did the user message expressing concern about Daniel?,X - 컨텍스트 초과,
+29,What is the UUID of the process that is related to an initiated shutdown?,"X - 오답
+","정답:7FF3F4981C033CB5B10251CC57580B9C
+AI답:359DB623-5C72-3BF3-B5D2-785FB581FFF7"
+30,"How much time elapsed between Tom reading a phone number and sending their first message on a different platform? 
+(Format: HH:MM:SS.sss)","X - 도구 호출 한도 초과
+
+",
+33,What was the lowest battery level the device reached?,X - 도구 호출 한도 초과,"컨텍스트 손실로 3번 처음부터 재시작, 원래 질문을 잊음"
+43,What was the logical size of the second most recent backup?,X - 도구 호출 한도 초과,
+44,What was the value associated with the most recent iCloud operation?,X - 도구 호출 한도 초과,
+47,"At what time (UTC 24hr time, format HH:MM) did the user join the network of a cafe on the first day of the month?","X - 컨텍스트 초과
+",
+49,"When was the last logoff time for the user “chick”? 
+(YYYY-MM-DD HH:MM:SS)","X - 도구 호출 한도 초과
+",
+63,What is the hashed password for the user “chick”?,X - 도구 호출 한도 초과,
+65,What suspicious command line tool was installed on Mary’s system?,X - 컨텍스트 초과,
+66,What does the file sucess.txt.txt contain?,X - 컨텍스트 초과,
+67,What was the most recent battery level recorded by the Chromebook?,X - 오답,정답:87 / AI답:61
+72,How many months was Mary employed with her company?,X - 도구 호출 한도 초과,
+73,"When did the user first interact with a fanfiction website?
+(UTC) Format: YYYY-MM-DD HH:MM:SS","X - 도구 호출 한도 초과
+",
+79,What is the ID of the URL with the most number of hits?,X - 도구 호출 한도 초과,
+80,What is the name of the current champion of the sport Ruth was trying to learn?,"X - 도구 호출 한도 초과
+",
+82,How many shirts are in the ad?,X - 도구 호출 한도 초과,
+89,What color hair does Ruth's Bitmoji have?,X - 컨텍스트 초과,
+91,What was the IP address logged from Discord?,X - 도구 호출 한도 초과,
+98,"Using format YYYY-MM, When was this device purchased?",X - 오답,"정답:2022-12 / AI답:2024-09
+기기 구매 기록을 못 찾아서 앱 다운로드 날짜로 추정."
+101,What link redirects you to apply for a job?,"X - 오답
+","정답:https://delivr.com/2fsmr-qr
+AI답:https://text.zenni.io/3z2R33I
+""job"" 단어만 보고 고른 답. Qwen도 진짜 채용 링크가 아니라고 인정"
+102,When was the last written record created? (format YYYY-MM-DD HH:MM:SS),"X - 오답
+
+","정답:2024-11-20 20:02:02
+AI답:2024-11-17 17:31:22
+쿠키 생성 시간을 답으로 씀."
+110,What degree does Mary have?,X - 도구 호출 한도 초과,
+111,What is the name of the structure seen in the picture taken at night?,X - 응답 시간 초과,
+112,What language was the nature website in?,X - 도구 호출 한도 초과,
+113,What singer appeared in a TikTok video watched on 2024-11-15 at 1:01:26 AM UTC?,"X - 도구 호출 한도 초과
+",
+116,How many spam numbers were created on 2024-11-27 at 02:42:52.972 UTC?,"X - 도구 호출 한도 초과
+",
+117,What’s the numerical rating for the app with the most installs?,X - 도구 호출 한도 초과,
+118,What is the hex code for the Profile Picture with the number (802) 495-9063?,"X - 도구 호출 한도 초과
+",
