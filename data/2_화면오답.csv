@@ -1,0 +1,60 @@
+번호,연도,문항유형,질문,오답 횟수,오답유형(1차),오답유형(2차),오답유형 일치
+2,2026,T2 사용자·기기,What was the last time in UTC Clash Of Clans was closed? (Format: YYYY-MM-DD HH:MM:SS),2,DISCOVERY,DISCOVERY,일치
+4,2026,T3 앱 데이터,What is the Ingress rating of the security camera that supports night vision?,2,DISCOVERY,DISCOVERY,일치
+5,2026,T3 앱 데이터,What was the answer to the first Wordle puzzle solved?,1,-,REASONING,단독 오답
+6,2026,T3 앱 데이터,What is the name of the client the user was most recently working on?,2,PARSING,DISCOVERY,불일치
+8,2026,T1 시스템·파일,What class had the most badges?,1,EXTRACTION,-,단독 오답
+11,2026,T3 앱 데이터,What is the hex code of the content color for the entry that expires on 2025-12-01 15:06:45?,1,PARSING,-,단독 오답
+12,2026,T4 복합,What was the PID of the app that was in focus at 2025-12-15 17:48:09?,2,PARSING,PARSING,일치
+13,2026,T1 시스템·파일,When in UTC was the timezone set? (YYYY-MM-DD HH:MM:SS),2,EXTRACTION,DISCOVERY,불일치
+15,2026,T3 앱 데이터,What Instagram handle does User ID 2278169415 belong to?,2,DISCOVERY,DISCOVERY,일치
+17,2026,T1 시스템·파일,In UTC when was the last iCloud backup? (YYYY-MM-DD HH:MM:SS),1,-,PARSING,단독 오답
+18,2026,T2 사용자·기기,What was the farthest distance the user logged in meters? (Round to the nearest hundredth),2,DISCOVERY,DISCOVERY,일치
+19,2026,T3 앱 데이터,How many people did the user message expressing concern about Daniel?,2,EXTRACTION,EXTRACTION,일치
+20,2026,T1 시스템·파일,What genre of app did the user download the most of?,1,-,EXTRACTION,단독 오답
+21,2026,T1 시스템·파일,What is the make and model of the car that was photographed without an iPhone?,1,EXTRACTION,-,단독 오답
+22,2026,T4 복합,What airport was the phone near when it pinged off of a cell tower on 2025-12-16 22:47:24 (UTC)?,1,-,DISCOVERY,단독 오답
+25,2026,T4 복합,What is the mascot of the frozen dessert shop that the user visits a lot?,1,-,EXTRACTION,단독 오답
+26,2026,T4 복합,What are the recorded coordinates of the place the user went to comment about a certain adult beverage?,1,EXTRACTION,-,단독 오답
+28,2026,T4 복합,"What word did the user misspell, then correct before sending over text on a Friday? (Format: type the misspelled word as-is)",1,-,DISCOVERY,단독 오답
+29,2026,T2 사용자·기기,What is the UUID of the process that is related to an initiated shutdown?,2,DISCOVERY,REASONING,불일치
+30,2026,T4 복합,How much time elapsed between Tom reading a phone number and sending their first message on a different platform? (Format: HH:MM:SS.sss),2,EXTRACTION,EXTRACTION,일치
+32,2026,T2 사용자·기기,At what time did the user last access a URL using Siri in UTC? (Format: YYYY-MM-DD HH:MM:SS),1,DISCOVERY,-,단독 오답
+33,2026,T2 사용자·기기,What was the lowest battery level the device reached?,2,EXTRACTION,EXTRACTION,일치
+35,2026,T3 앱 데이터,How many tasks did the user have on 2025-12-10?,1,DISCOVERY,-,단독 오답
+36,2026,T1 시스템·파일,What is the IMEI of the connected iPhone?,1,-,DISCOVERY,단독 오답
+43,2026,T1 시스템·파일,What was the logical size of the second most recent backup?,2,PARSING,PARSING,일치
+44,2026,T3 앱 데이터,What was the value associated with the most recent iCloud operation?,2,DISCOVERY,DISCOVERY,일치
+47,2026,T2 사용자·기기,"At what time (UTC 24hr time, format HH:MM) did the user join the network of a cafe on the first day of the month?",2,EXTRACTION,DISCOVERY,불일치
+49,2025,T2 사용자·기기,When was the last logoff time for the user “chick”? (YYYY-MM-DD HH:MM:SS),2,PARSING,PARSING,일치
+55,2025,T1 시스템·파일,What is the creation date for Mary’s user account? (YYYY-MM-DD HH:MM:SS),1,DISCOVERY,-,단독 오답
+57,2025,T2 사용자·기기,What file was an anti-forensic tool used on?,1,-,REASONING,단독 오답
+61,2025,T3 앱 데이터,What was the suggestion count when Mary was going to play a popular word-based browser game?,1,-,DISCOVERY,단독 오답
+63,2025,T1 시스템·파일,What is the hashed password for the user “chick”?,2,REFUSAL,REFUSAL,일치
+64,2025,T3 앱 데이터,What was the username of the person who saw the clouds coming in at 6:30 while doing a geocache?,1,EXTRACTION,-,단독 오답
+65,2025,T1 시스템·파일,What suspicious command line tool was installed on Mary’s system?,2,DISCOVERY,DISCOVERY,일치
+66,2025,T4 복합,What does the file sucess.txt.txt contain?,2,DISCOVERY,DISCOVERY,일치
+67,2025,T2 사용자·기기,What was the most recent battery level recorded by the Chromebook?,2,REASONING,REASONING,일치
+71,2025,T2 사용자·기기,How was the device most commonly woken up?,1,REASONING,-,단독 오답
+72,2025,T1 시스템·파일,How many months was Mary employed with her company?,2,PARSING,PARSING,일치
+73,2025,T3 앱 데이터,When did the user first interact with a fanfiction website? (UTC) Format: YYYY-MM-DD HH:MM:SS,2,EXTRACTION,DISCOVERY,불일치
+75,2025,T1 시스템·파일,What is the size of Ruth’s advertisement in bytes?,1,EXTRACTION,-,단독 오답
+77,2025,T1 시스템·파일,What is the version of the noise suppression software?,1,-,PARSING,단독 오답
+79,2025,T3 앱 데이터,What is the ID of the URL with the most number of hits?,2,PARSING,PARSING,일치
+80,2025,T4 복합,What is the name of the current champion of the sport Ruth was trying to learn?,2,REASONING,REASONING,일치
+82,2025,T1 시스템·파일,How many shirts are in the ad,2,PARSING,PARSING,일치
+87,2025,T2 사용자·기기,How many words typed were autocorrected?,1,-,PARSING,단독 오답
+89,2025,T1 시스템·파일,What color hair does Ruth's Bitmoji have?,2,PARSING,PARSING,일치
+90,2025,T1 시스템·파일,What was the first AI tool installed on the device?,1,DISCOVERY,-,단독 오답
+91,2025,T3 앱 데이터,What was the IP address logged from Discord?,2,DISCOVERY,EXTRACTION,불일치
+98,2025,T1 시스템·파일,"Using format YYYY-MM, When was this device purchased?",2,PARSING,PARSING,일치
+101,2025,T4 복합,What link redirects you to apply for a job?,2,DISCOVERY,DISCOVERY,일치
+102,2025,T1 시스템·파일,When was the last written record created? (format YYYY-MM-DD HH:MM:SS),2,EXTRACTION,DISCOVERY,불일치
+103,2025,T3 앱 데이터,What animal was in the TikTok sent via text?,1,REASONING,-,단독 오답
+110,2025,T1 시스템·파일,What degree does Mary have?,2,DISCOVERY,EXTRACTION,불일치
+111,2025,T1 시스템·파일,What is the name of the structure seen in the picture taken at night?,2,REASONING,PARSING,불일치
+112,2025,T3 앱 데이터,What language was the nature website in?,2,DISCOVERY,DISCOVERY,일치
+113,2025,T3 앱 데이터,What singer appeared in a TikTok video watched on 2024-11-15 at 1:01:26 AM UTC?,2,EXTRACTION,EXTRACTION,일치
+116,2025,T2 사용자·기기,How many spam numbers were created on 2024-11-27 at 02:42:52.972 UTC?,2,EXTRACTION,EXTRACTION,일치
+117,2025,T3 앱 데이터,What’s the numerical rating for the app with the most installs?,2,EXTRACTION,EXTRACTION,일치
+118,2025,T3 앱 데이터,What is the hex code for the Profile Picture with the number (802) 495-9063?,2,PARSING,EXTRACTION,불일치

@@ -292,7 +292,7 @@
       </div>
 
       <div class="card">
-        <h3 style="margin-top:0">오답 라벨링 예시</h3>
+        <h3 style="margin-top:0">오답 라벨링 결과 데이터 셋</h3>
         <div class="filters">
           <input id="caseSearch" type="text" placeholder="문항 번호, 질문, 오답 유형, 경로/원인 검색..." />
           <select id="platformFilter"><option value="">전체 이미지/데이터셋</option></select>
@@ -483,26 +483,16 @@
   <script>
     const DATA_FILES = {
       summaryRaw: "./data/1_문제 유형 분류 - 전체 요약.csv",
-      humanVsAi: "./data/2_Discovery&Reasoning_사람vsAI경로비교 - 문제별_상세비교표.csv",
-      patternStats: "./data/2_Discovery&Reasoning_사람vsAI경로비교 - 패턴_요약통계.csv",
-      accessCompare: "./data/2_Extraction&Parsing_접근허용복구비교 - 로컬접근vs힌트_비교분석.csv",
-      accessSummary: "./data/2_Extraction&Parsing_접근허용복구비교 - 유형별_비교요약.csv",
-      labelFinal: "./data/2_오답라벨링(정리본) - 1_최종탭.csv",
-      labelHint: "./data/2_오답라벨링(정리본) - 2_힌트탭.csv",
-      labelDetail: "./data/2_오답라벨링(정리본) - 3_힌트 구체화.csv",
-      hintEffect: "./data/3_오답문제 힌트, 정답 효과 - 힌트 정답 복구 효과 통계.csv",
+      screenError: "./data/2_화면오답.csv",
+      screenHint: "./data/3_화면힌트.csv",
       qwen: "./data/3_오픈소스모델(QWEN)_오답문제재풀이 - 시트1.csv"
     };
 
     const state = {
       imageRows: [],
       qTypeRows: [],
-      humanVsAi: [],
-      patternStats: [],
-      accessCompare: [],
-      accessSummary: [],
-      labelFinal: [],
-      hintEffect: [],
+      screenError: [],
+      screenHint: [],
       qwen: []
     };
 
@@ -537,7 +527,7 @@
 
     function parseCsvRaw(url) {
       return new Promise(resolve => {
-        Papa.parse(encodeURI(url), {
+        Papa.parse(`${encodeURI(url)}?t=${Date.now()}`, {
           download: true,
           header: false,
           skipEmptyLines: true,
@@ -549,28 +539,48 @@
 
     function parseCsvObjects(url) {
       return new Promise(resolve => {
-        Papa.parse(encodeURI(url), {
+        Papa.parse(`${encodeURI(url)}?t=${Date.now()}`, {
           download: true,
           header: false,
           skipEmptyLines: true,
           complete: res => {
             const raw = res.data || [];
-            if (!raw.length) return resolve({ ok: true, rows: [] });
+            if (!raw.length) return resolve({ ok: false, rows: [] });
 
+            // 2_화면오답.csv 및 3_화면힌트.csv 헤더 행 탐색
             let headerIdx = raw.findIndex(cells => {
-              const joined = cells.map(cleanText).join(" ");
-              return joined.includes("번호") && (joined.includes("질문") || joined.includes("문항유형"));
+              const joined = cells.map(cleanText).join(",");
+              return (
+                joined.includes("번호,연도,문항유형") ||
+                joined.includes("번호,회차,문항유형") ||
+                (joined.includes("번호") && (joined.includes("질문") || joined.includes("문항유형") || joined.includes("힌트유형")))
+              );
             });
 
             if (headerIdx === -1) {
-              const firstJoined = raw[0].map(cleanText).join(" ");
-              headerIdx = (firstJoined.includes("최종탭") || firstJoined.includes("기본 정보")) && raw.length > 1 ? 1 : 0;
+              headerIdx = raw.findIndex(cells => {
+                const nonEmpty = cells.map(cleanText).filter(Boolean);
+                if (nonEmpty.length < 2) return false;
+                const joined = nonEmpty.join(" ");
+                return (
+                  joined.includes("번호") ||
+                  joined.includes("질문") ||
+                  joined.includes("힌트") ||
+                  joined.includes("오답") ||
+                  joined.includes("유형") ||
+                  joined.includes("복구")
+                );
+              });
             }
+
+            if (headerIdx === -1) headerIdx = 0;
 
             const headers = raw[headerIdx].map((h, i) => cleanText(h) || `열_${i + 1}`);
             const dataRows = raw.slice(headerIdx + 1).filter(cells =>
               cells.some(c => cleanText(c) !== "")
             );
+
+            if (!dataRows.length) return resolve({ ok: false, rows: [] });
 
             const objects = dataRows.map(cells => {
               const obj = {};
@@ -648,8 +658,9 @@
       if (unique.includes(current)) selectEl.value = current;
     }
 
+    // 2번 화면: 2_화면오답.csv
     function updateErrorTypesTab() {
-      const base = state.labelFinal.length ? state.labelFinal : state.humanVsAi;
+      const base = state.screenError;
       const q = document.getElementById("caseSearch").value.trim().toLowerCase();
       const plat = document.getElementById("platformFilter").value;
       const err = document.getElementById("errorFilter").value;
@@ -698,15 +709,13 @@
         btn.textContent = showAllCases ? "접기 (5개만 보기)" : "더보기";
       }
       info.textContent = filtered.length
-        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중`
+        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중 (2_화면오답.csv)`
         : "";
     }
 
+    // 3번 화면: 3_화면힌트.csv
     function updateHintRerunTab() {
-      const source = state.labelFinal.length
-        ? state.labelFinal
-        : (state.accessCompare.length ? state.accessCompare : state.hintEffect);
-
+      const source = state.screenHint;
       const q = document.getElementById("hintSearch").value.trim().toLowerCase();
       const selectedErrType = document.getElementById("hintErrorTypeFilter").value;
       const selectedHintType = document.getElementById("hintTypeFilter").value;
@@ -755,7 +764,7 @@
         btn.textContent = showAllHintRows ? "접기 (5개만 보기)" : "더보기";
       }
       info.textContent = filtered.length
-        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중`
+        ? `${Math.min(limit, filtered.length)} / ${filtered.length}건 표시 중 (3_화면힌트.csv)`
         : "";
     }
 
@@ -814,14 +823,15 @@
     }
 
     async function initAutoLoad() {
-      const [summaryRawRes, ...objResults] = await Promise.all([
+      const [
+        summaryRawRes,
+        errorRes,
+        hintRes,
+        qwenRes
+      ] = await Promise.all([
         parseCsvRaw(DATA_FILES.summaryRaw),
-        parseCsvObjects(DATA_FILES.humanVsAi),
-        parseCsvObjects(DATA_FILES.patternStats),
-        parseCsvObjects(DATA_FILES.accessCompare),
-        parseCsvObjects(DATA_FILES.accessSummary),
-        parseCsvObjects(DATA_FILES.labelFinal),
-        parseCsvObjects(DATA_FILES.hintEffect),
+        parseCsvObjects(DATA_FILES.screenError),
+        parseCsvObjects(DATA_FILES.screenHint),
         parseCsvObjects(DATA_FILES.qwen)
       ]);
 
@@ -831,17 +841,13 @@
         okCount += 1;
       }
 
-      const keys = ["humanVsAi", "patternStats", "accessCompare", "accessSummary", "labelFinal", "hintEffect", "qwen"];
-      objResults.forEach((res, idx) => {
-        if (res.ok && res.rows.length) {
-          state[keys[idx]] = res.rows;
-          okCount += 1;
-        }
-      });
+      if (errorRes.ok && errorRes.rows.length) { state.screenError = errorRes.rows; okCount += 1; }
+      if (hintRes.ok && hintRes.rows.length) { state.screenHint = hintRes.rows; okCount += 1; }
+      if (qwenRes.ok && qwenRes.rows.length) { state.qwen = qwenRes.rows; okCount += 1; }
 
       const statusEl = document.getElementById("loadStatus");
       if (okCount > 0) {
-        statusEl.textContent = `./data 주요 CSV ${okCount}/8개 자동 로드 완료`;
+        statusEl.textContent = `./data 주요 CSV ${okCount}/4개 자동 로드 완료`;
         statusEl.classList.remove("warn");
       } else {
         statusEl.textContent = `./data 자동 로드 미감지 (수동 CSV 추가 사용)`;
@@ -860,9 +866,9 @@
           skipEmptyLines: true,
           complete: res => {
             const name = file.name.toLowerCase();
-            if (name.includes("qwen")) state.qwen = res.data;
-            else if (name.includes("접근허용") || name.includes("힌트")) state.accessCompare = res.data;
-            else if (name.includes("사람vsai") || name.includes("오답라벨링")) state.labelFinal = res.data;
+            if (name.includes("2_화면오답")) state.screenError = res.data;
+            else if (name.includes("3_화면힌트")) state.screenHint = res.data;
+            else if (name.includes("qwen")) state.qwen = res.data;
             updateErrorTypesTab();
             updateHintRerunTab();
             updateQwenTab();
