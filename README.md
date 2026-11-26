@@ -54,7 +54,7 @@ docker run -d -p 8080:80 sbcc-dashboard
 
 | 이름 | GitHub | 담당 역할 및 주요 기여 내용 |
 | :--- | :--- | :--- |
-| **진세라** (팀장) | `@SBCCsera` | 선행연구, 문제 유형 분석 및 분류, 2차 실행 및 오답 라벨링, `Discovery/Reasoning` 오답 심층 분석, 결과 웹 대시보드 구축 및 배포, 발표 PPT, 최종 보고서 및 논문 초안 `Discovery/Reasoning` 파트 |
+| **진세라** (팀장) | `@SBCCsera` | 선행연구, 문제 유형 분석 및 분류, 2차 실행 및 오답 라벨링, `Discovery/Reasoning` 오답 심층 분석, 결과 웹 대시보드 구축 및 배포, 발표 PPT, 최종 보고서 및 논문 초안 `Discovery/Reasoning` 파트, 시연 동영상 대본 작성 |
 | **박제윤** | `@SBCCjeyoon` | 선행연구, 1차 실행 및 오답 라벨링, 힌트 구체화 비교, `Extraction/Parsing` 재검증 및 분석, `Discovery/Reasoning` 세부 사례 트리 추가, 포스터, 최종 보고서 및 논문 초안 나머지 파트 |
 | **전시연** | `@wjstldus616` | 선행연구, 오답 라벨링 힌트 검증 파트 일부분, `Qwen 3.8 Max` 교차 검증, 연구 시연 동영상, 최종 보고서 및 논문 초안 `Qwen` 파트 |
 
